@@ -15,52 +15,66 @@ import itchat, time
 from itchat.content import *
 
 #when should pusher send msg to weixin account
+#TODO put this obj into a configuration file.
 threshold = {}
 threshold['s_sh603993'] = {}
 threshold['s_sz000897'] = {}
 
 #s_sh603993 洛阳钼业
 threshold['s_sh603993']['lower'] = 4.5
-threshold['s_sh603993']['middle'] = 5.0
-threshold['s_sh603993']['upper'] = 5.2
+threshold['s_sh603993']['middle'] = 4.7
+threshold['s_sh603993']['upper'] = 4.9
 
 #s_sz000897 津滨发展
 threshold['s_sz000897']['lower'] = 6.2
-threshold['s_sz000897']['middle'] = 6.5
-threshold['s_sz000897']['upper'] = 6.8
+threshold['s_sz000897']['middle'] = 6.3
+threshold['s_sz000897']['upper'] = 6.4
 
 
 #global queue
 pusherQueue = Queue()
+#TODO list:
+#1. Add Receiver. Which can receive customer's new stock request. Using itchat's auto reply. Need another working thread 
+#on listening coming message.
+#2. log to file
 
 class Pusher(threading.Thread):
     """Stock information push to weixin account"""
     def __init__(self):
-        self.status = ""
+        threading.Thread.__init__(self)
+        self.status = {}
+        self.init_status()
     
-    def info_warning(self, sid, curVlaue):
-        pass
+    def init_status(self):
+        for k in threshold.keys():
+            self.status[k] = ""
+
+    def info_warning(self, sid, curValue):
+        msg = "Current value of " + str(sid) + " : " + str(curValue)
+        itchat.send_msg(msg, "filehelper")
 
     def strong_warning(self, sid, curValue):
-        pass
+        msg = "[WARNING!!!]Current value of " + str(sid) + " : " + str(curValue)
+        itchat.send_msg(msg, "filehelper")
 
-    
-    def quick_strategy(self, sid, curVaule, strategyTable):
-        if curValue <= strategyTable['lower'] and self.status != "lower": #lower only inform when status changes
-            self.status = "lower"
+    def quick_strategy(self, sid, curValue, strategyTable):
+        if curValue <= strategyTable['lower'] and self.status[sid] != "lower": #lower only inform when status changes
+            self.status[sid] = "lower"
             self.strong_warning(sid, curValue)
-        elif curValue <= strategyTable['middle'] and self.status != "lower_middle":  #lower_middle only inform when status changes
-            self.status = "lower_middle"
+        elif curValue <= strategyTable['middle'] and self.status[sid] != "lower_middle":  #lower_middle only inform when status changes
+            self.status[sid] = "lower_middle"
             self.info_warning(sid, curValue)
-        elif curValue <= strategyTable['upper'] and self.status != "middle_upper": #middle_upper only inform when status changes
-            self.status = "middle_upper"
+        elif curValue <= strategyTable['upper'] and self.status[sid] != "middle_upper": #middle_upper only inform when status changes
+            self.status[sid] = "middle_upper"
             self.info_warning(sid, curValue)
         elif curValue > strategyTable['upper']: #always inform when current share's value is bigger than upper threshold
-            self.status = "upper"
+            self.status[sid] = "upper"
             self.strong_warning(sid, curValue)
         
 
     def run(self):
+        itchat.auto_login(True) #login weixin
+
         while True:
             #current in format (0, 's_sz000897', '6.47')
             current = pusherQueue.get()
@@ -156,6 +170,10 @@ if __name__ == '__main__':
         raise ValueError
 
     stock = Stock(options.codes, options.thread_num)
+
+    #start pusher
+    pusher = Pusher()
+    pusher.start()
 
     while True:
         print "start to get information..."
