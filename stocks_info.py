@@ -1,9 +1,6 @@
 # -*-coding:utf-8 -*-
 # 
-# Created on 2016-03-04, by felix
-# 
-
-__author__ = 'felix'  #Thanks to felix's share.
+# Created on 2017-04-10, by skygon
  
 import requests
 import time
@@ -12,6 +9,66 @@ import threading
 
 from Queue import Queue
 from optparse import OptionParser
+
+#itchat, a weixin autoreply tool
+import itchat, time
+from itchat.content import *
+
+#when should pusher send msg to weixin account
+threshold = {}
+threshold['s_sh603993'] = {}
+threshold['s_sz000897'] = {}
+
+#s_sh603993 洛阳钼业
+threshold['s_sh603993']['lower'] = 4.5
+threshold['s_sh603993']['middle'] = 5.0
+threshold['s_sh603993']['upper'] = 5.2
+
+#s_sz000897 津滨发展
+threshold['s_sz000897']['lower'] = 6.2
+threshold['s_sz000897']['middle'] = 6.5
+threshold['s_sz000897']['upper'] = 6.8
+
+
+#global queue
+pusherQueue = Queue()
+
+class Pusher(threading.Thread):
+    """Stock information push to weixin account"""
+    def __init__(self):
+        self.status = ""
+    
+    def info_warning(self, sid, curVlaue):
+        pass
+
+    def strong_warning(self, sid, curValue):
+        pass
+
+    
+    def quick_strategy(self, sid, curVaule, strategyTable):
+        if curValue <= strategyTable['lower'] and self.status != "lower": #lower only inform when status changes
+            self.status = "lower"
+            self.strong_warning(sid, curValue)
+        elif curValue <= strategyTable['middle'] and self.status != "lower_middle":  #lower_middle only inform when status changes
+            self.status = "lower_middle"
+            self.info_warning(sid, curValue)
+        elif curValue <= strategyTable['upper'] and self.status != "middle_upper": #middle_upper only inform when status changes
+            self.status = "middle_upper"
+            self.info_warning(sid, curValue)
+        elif curValue > strategyTable['upper']: #always inform when current share's value is bigger than upper threshold
+            self.status = "upper"
+            self.strong_warning(sid, curValue)
+        
+
+    def run(self):
+        while True:
+            #current in format (0, 's_sz000897', '6.47')
+            current = pusherQueue.get()
+            sid = current[1]
+            value = float(current[2])
+            if sid in threshold:
+                self.quick_strategy(sid, value, threshold[sid])
+
 
 
 class Worker(threading.Thread):
@@ -28,11 +85,12 @@ class Worker(threading.Thread):
             res = func(arg, code_index)
             self.result_queue.put(res)
             if self.result_queue.full():
-                res = sorted([self.result_queue.get() for i in range(self.result_queue.qsize())], key=lambda s: s[0], reverse=True)
-                res.insert(0, ('0', u'name      price'))
+                #res format: [(0, 's_sz000897', '6.47'), (1, 's_sh603993', '5.010')]
+                res = sorted([self.result_queue.get() for i in range(self.result_queue.qsize())], key=lambda s: s[0], reverse=False)
                 print '***** start *****'
                 for obj in res:
-                    print obj[1]
+                    pusherQueue.put(obj)
+                    print obj
                 print '***** end *****\n'
             self.work_queue.task_done()
 
@@ -48,7 +106,7 @@ class Stock(object):
 
     def __init_thread_poll(self, thread_num):
         self.params = self.code.split(',')
-        self.params.extend(['s_sh000001', 's_sz399001'])  # 默认获取沪指、深指
+        #self.params.extend(['s_sh000001', 's_sz399001'])  # 默认获取沪指、深指
         self.result_queue = Queue(maxsize=len(self.params[::-1]))
         for i in range(thread_num):
             self.threads.append(Worker(self.work_queue, self.result_queue))
@@ -79,7 +137,7 @@ class Stock(object):
         if len(res) > 1:
             #name, now = res[0][slice_num:], res[value_num]
             name, now = code, res[value_num]
-        return code_index, name + ' ' + now
+        return code_index, name ,  now
 
 
 if __name__ == '__main__':
@@ -93,6 +151,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args(args=sys.argv[1:])
 
     assert options.codes, "Please enter the stock code!"  # 是否输入股票代码
+    print options.codes.split(',')
     if filter(lambda s: s[:-6] not in ('sh', 'sz', 's_sh', 's_sz'), options.codes.split(',')):  # 股票代码输入是否正确
         raise ValueError
 
