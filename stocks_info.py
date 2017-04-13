@@ -10,7 +10,7 @@ import threading
 from Queue import Queue
 from optparse import OptionParser
 
-#itchat, a weixin autoreply tool
+#itchat, a wechat autoreply tool
 import itchat, time
 from itchat.content import *
 
@@ -73,7 +73,7 @@ class Pusher(threading.Thread):
         
 
     def run(self):
-        itchat.auto_login(True) #login weixin
+        itchat.auto_login(True) #login wechat
 
         while True:
             #current in format (0, 's_sz000897', '6.47')
