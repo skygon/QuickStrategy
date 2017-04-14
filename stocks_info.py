@@ -37,6 +37,7 @@ pusherQueue = Queue()
 #1. Add Receiver. Which can receive customer's new stock request. Using itchat's auto reply. Need another working thread 
 #on listening coming message.
 #2. log to file
+#3. Advantage usage. 爬取所有A股的大笔成交量，如检测到1000万股以上的交易量，就发消息提醒。 
 
 class Pusher(threading.Thread):
     """Stock information push to weixin account"""
