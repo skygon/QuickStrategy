@@ -21,14 +21,14 @@ threshold['s_sh603993'] = {}
 threshold['s_sz000897'] = {}
 
 #s_sh603993 洛阳钼业
-threshold['s_sh603993']['lower'] = 4.5
-threshold['s_sh603993']['middle'] = 4.7
-threshold['s_sh603993']['upper'] = 4.9
+threshold['s_sh603993']['lower'] = 4.95
+threshold['s_sh603993']['middle'] = 5.10
+threshold['s_sh603993']['upper'] = 5.15
 
 #s_sz000897 津滨发展
-threshold['s_sz000897']['lower'] = 6.2
+threshold['s_sz000897']['lower'] = 6.1
 threshold['s_sz000897']['middle'] = 6.3
-threshold['s_sz000897']['upper'] = 6.4
+threshold['s_sz000897']['upper'] = 6.8
 
 
 #global queue
@@ -37,6 +37,7 @@ pusherQueue = Queue()
 #1. Add Receiver. Which can receive customer's new stock request. Using itchat's auto reply. Need another working thread 
 #on listening coming message.
 #2. log to file
+#3. Advantage usage. 爬取所有A股的大笔成交量，如检测到1000万股以上的交易量，就发消息提醒。 
 
 class Pusher(threading.Thread):
     """Stock information push to weixin account"""
@@ -58,15 +59,18 @@ class Pusher(threading.Thread):
         itchat.send_msg(msg, "filehelper")
 
     def quick_strategy(self, sid, curValue, strategyTable):
-        if curValue <= strategyTable['lower'] and self.status[sid] != "lower": #lower only inform when status changes
-            self.status[sid] = "lower"
-            self.strong_warning(sid, curValue)
-        elif curValue <= strategyTable['middle'] and self.status[sid] != "lower_middle":  #lower_middle only inform when status changes
-            self.status[sid] = "lower_middle"
-            self.info_warning(sid, curValue)
-        elif curValue <= strategyTable['upper'] and self.status[sid] != "middle_upper": #middle_upper only inform when status changes
-            self.status[sid] = "middle_upper"
-            self.info_warning(sid, curValue)
+        if curValue <= strategyTable['lower']:
+            if self.status[sid] != "lower":    #lower only inform when status changes
+                self.status[sid] = "lower"
+                self.strong_warning(sid, curValue)
+        elif curValue <= strategyTable['middle']:
+            if self.status[sid] != "lower_middle":  #lower_middle only inform when status changes
+                self.status[sid] = "lower_middle"
+                self.info_warning(sid, curValue)
+        elif curValue <= strategyTable['upper']:
+            if self.status[sid] != "middle_upper": #middle_upper only inform when status changes
+                self.status[sid] = "middle_upper"
+                self.info_warning(sid, curValue)
         elif curValue > strategyTable['upper']: #always inform when current share's value is bigger than upper threshold
             self.status[sid] = "upper"
             self.strong_warning(sid, curValue)
