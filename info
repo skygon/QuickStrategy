@@ -16,3 +16,4 @@ day_id  stock_id  ...
 ..
 N
 使用mysql 的 update or insert if not found 语法。 可以很方便得扩展N的值。
+
