@@ -1,3 +1,18 @@
 pyautogui 
 autohotkey
 https://muxuezi.github.io/posts/doc-pyautogui.html
+
+Tables
+1. 大盘所有A股的基本情况表，每天更新
+2. 所有A股的交易明细表，保留N天。表结构为：
+day_id  stock_id  ...
+1        0000001
+1        0000002
+1
+..
+2
+..
+3
+..
+N
+使用mysql 的 update or insert if not found 语法。 可以很方便得扩展N的值。
