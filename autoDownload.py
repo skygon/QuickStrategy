@@ -1,13 +1,15 @@
 import pyautogui
 
-# Some settings
+# Global settings
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.5
 
-#Positions maps
+# Positions maps
 posMap = {}
-
-# Helper functions
+# hotkey maps
+hotKey = {}
+hotKey["properties"] = ['winleft', 'altleft', 'p']
+#========================Helper functions==================================
 def addPosMap(name, x, y):
     posMap[name] = {}
     posMap[name]['x'] = x
@@ -20,9 +22,21 @@ def moveTo(name, delay = 0.1):
 def click(name, bton = 'left'):
     moveTo(name)
     pyautogui.click(button = bton)
-# add postions map
-addPosMap("File", 22, 24)
 
+def menuOperator(direct, times):
+    for i in range(times):
+        pyautogui.press(direct)
+
+    pyautogui.press('enter')
+
+def pressHotKey(hkey):
+    for k in hotKey[hkey]:
+        
+#======================End of helper functions=============================
+
+#============Begin position map=================
+addPosMap("File", 22, 24)
+#=======End of position map==========================
 
 
 #========================TEST===================================
@@ -37,5 +51,9 @@ print cx, cy
 #move to file menu and left click
 click("File", 'right')
 
+#move to some file menu options. This is slow.
+#menuOperator('down', 14) # to File -> properties
 
-#pyautogui.dragTo(300,300,1)
+pressHotKey("properties")
+
+
