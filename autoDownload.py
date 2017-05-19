@@ -7,8 +7,8 @@ import Queue
 
 #==============================global variables==================================
 # full url example : "http://market.finance.sina.com.cn/downxls.php?date=2017-05-18&symbol=sh603993"
-base_url = "http://market.finance.sina.com.cn/downxls.php"  
-dest_dir = ".\data"
+base_url = "http://market.finance.sina.com.cn/downxls.php"
+dest_dir = ".\tmp_data"
 SHA = ".\config\sh_a.txt"
 SZA = '.\config\sz_a.txt'
 

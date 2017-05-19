@@ -1,11 +1,12 @@
+# -*- coding: utf-8 -*-
 import os
+import xlrd
 
-f = open('.\config\sz_a.txt')
-line = f.readline()
+xlrd.Book.encoding = "utf8"
+book = xlrd.open_workbook(r".\tmp_data\sh600010.xls")
+sheet = book.sheet_by_index(0)
 
-while line:
-    print line.strip('\n')
-    line = f.readline()
-    
+rows = sheet.nrows
+cols = sheet.ncols
 
-f.close()
+print rows, cols
