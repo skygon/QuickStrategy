@@ -9,6 +9,9 @@ import Queue
 # full url example : "http://market.finance.sina.com.cn/downxls.php?date=2017-05-18&symbol=sh603993"
 base_url = "http://market.finance.sina.com.cn/downxls.php"  
 dest_dir = ".\data"
+SHA = ".\config\sh_a.txt"
+SZA = '.\config\sz_a.txt'
+
 thread_pool_num = 10
 #code_file = ""
 
@@ -25,9 +28,20 @@ def usage():
     python autoDownload.py date_string
     example : python autoDownload.py "2017-05-18"
     '''
+
+def read_to_queue(prefix, filename):
+    f = open(filename)
+    line = f.readline()
+    while line:
+        code = prefix + line.strip('\n')
+        download_queue.put(code)
+        line = f.readline()
+    f.close()
+
 def init_download_queue():
-    download_queue.put("sz000001")
-    download_queue.put("sh603993")
+    # read codes from files
+    read_to_queue('sh', SHA)
+    read_to_queue('sz', SZA)
 
 def compose_url(date_string, code):
     full_url = base_url + "?date=" + date_string + "&symbol=" + code
@@ -62,6 +76,7 @@ class Worker(threading.Thread):
                 full_url = compose_url(self.date_string, code)
                 mylogger( "full_url is %s \n" , full_url)
                 file_name = code + ".xls"
+                mylogger("filename is %s \n", file_name)
                 self.download(full_url, file_name)
             except Queue.Empty:
                 print "All code has been downloaded \n"
