@@ -1,3 +1,6 @@
+sina finace:
+http://finance.sina.com.cn/data/#stock-schq-hsgs-zs
+======================================================================================================
 从网上找到的Sina API的财经API说，Mark一下，以供以后参考
 http://market.finance.sina.com.cn/downxls.php?date=2011-07-08&symbol=sh600900
 获取代码为sh600900，在2011-07-08的成交明细，数据为xls格式。
