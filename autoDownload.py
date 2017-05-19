@@ -70,7 +70,6 @@ class Worker(threading.Thread):
             except Exception:
                 #Ignore other exception. Just go to next download task
                 print "ERROR: download failed \n"
-                break
 
 def here_we_go(date_string):
     init_download_queue()
