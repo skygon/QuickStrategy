@@ -18,3 +18,7 @@ N
 使用mysql 的 update or insert if not found 语法。 可以很方便得扩展N的值。
 
 自动盯盘可以使用stock_info.py 
+
+
+编码：
+http://www.cnblogs.com/huxi/archive/2010/12/05/1897271.html

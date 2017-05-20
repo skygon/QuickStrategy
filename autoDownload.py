@@ -8,7 +8,7 @@ import Queue
 #==============================global variables==================================
 # full url example : "http://market.finance.sina.com.cn/downxls.php?date=2017-05-18&symbol=sh603993"
 base_url = "http://market.finance.sina.com.cn/downxls.php"
-dest_dir = ".\tmp_data"
+dest_dir = ".\detail_data"
 SHA = ".\config\sh_a.txt"
 SZA = '.\config\sz_a.txt'
 
@@ -75,7 +75,7 @@ class Worker(threading.Thread):
                 mylogger( "I get code %s \n" , code )
                 full_url = compose_url(self.date_string, code)
                 mylogger( "full_url is %s \n" , full_url)
-                file_name = code + ".xls"
+                file_name = code + ".csv"
                 mylogger("filename is %s \n", file_name)
                 self.download(full_url, file_name)
             except Queue.Empty:
