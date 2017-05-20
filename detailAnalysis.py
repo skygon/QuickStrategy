@@ -8,7 +8,6 @@ SHA = ".\config\sh_a.txt"
 SZA = '.\config\sz_a.txt'
 
 thread_pool_num = 10
-
 #analysis queue. Should be the all codes
 analysis_queue = Queue.Queue()
 
@@ -17,8 +16,8 @@ analysis_queue = Queue.Queue()
 def usage():
     print '''
     usage:
-    python autoDownload.py date_string
-    example : python autoDownload.py "2017-05-18"
+    python detailAnalysis.py date_string
+    example : python detailAnalysis.py "2017-05-18"
     '''
 
 def read_to_queue(prefix, filename):
@@ -41,3 +40,5 @@ def mylogger(message, vars):
 #===============================End of helper functions=================================
 
 
+class Worker(threading.Thread):
+    def __init__(self, filename, )
