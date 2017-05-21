@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 import os
 
+#test for analysis
 f = open('E:\skygon\QuickStrategy\detail_data\sh600010.csv')
 
 count = 0
