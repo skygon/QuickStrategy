@@ -17,5 +17,5 @@ ss = '卖盘'
 print str(repr(s))
 print repr(ss)
 
-print repr(BUY_STR) == repr(s)
-print repr(SELL_STR) == repr(ss)
+print repr(BUY_STR) == repr(s) # True
+print repr(SELL_STR) == repr(ss) # True

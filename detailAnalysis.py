@@ -3,9 +3,9 @@ import Queue
 import threading
 
 # global variables
-file_path = ".\detail_data"
-SHA = ".\config\sh_a.txt"
-SZA = '.\config\sz_a.txt'
+file_path = os.path.join(os.getcwd(), "detail_data")
+SHA = os.path.join(os.getcwd(), "config", "sh_a.txt")
+SZA = os.path.join(os.getcwd(), "config", "sz_a.txt")
 
 thread_pool_num = 10
 #analysis queue. Should be the all codes
