@@ -1,6 +1,8 @@
 import os
+import sys
 import Queue
 import threading
+import json
 from utils import *
 
 # global variables
@@ -8,8 +10,6 @@ file_path = os.path.join(os.getcwd(), "detail_data")
 SHA = os.path.join(os.getcwd(), "config", "sh_a.txt")
 SZA = os.path.join(os.getcwd(), "config", "sz_a.txt")
 
-BUY_STR = '\xe4\xb9\xb0\xe7\x9b\x98'
-SELL_STR = '\xe5\x8d\x96\xe7\x9b\x98'
 
 thread_pool_num = 10
 #analysis queue. Should be the all codes
@@ -34,13 +34,16 @@ def read_to_queue(prefix, file_name):
     f.close()
 
 def init_analysis_queue():
+    analysis_queue.put("sh600010")
     # read codes from files
-    read_to_queue('sh', SHA)
-    read_to_queue('sz', SZA)
+    #read_to_queue('sh', SHA)
+    #read_to_queue('sz', SZA)
 
 def compose_filename(code):
     fn = code + ".csv"
-    return os.path.join(file_path, fn)
+    full_path = os.path.join(file_path, fn)
+    mylogger("full path %s", full_path)
+    return full_path
 
 
 def mylogger(message, vars):
@@ -50,10 +53,11 @@ def mylogger(message, vars):
 
 class Worker(threading.Thread):
     def __init__(self, date_string):
-        treading.Thread.__init__(self)
+        threading.Thread.__init__(self)
         self.date_string = date_string
         self.data = {}
-        initDataStruct()
+        self.initDataStruct()
+        self.start()
 
     def initDataStruct(self):
         self.data.clear()
@@ -62,28 +66,82 @@ class Worker(threading.Thread):
         self.data['volume'] = []
         self.data['type'] = []
     
+    def dumpToFile(self):
+        try:
+            f = open('output.json', 'wb')
+            json.dump(self.data, f)
+        except Exception, e:
+            print "ERROR-dumpFile: %s\n" %str(e)
+        finally:
+            f.close()
+
+
+
     def writeToDatabase(self, data):
         pass
     
+    #line format: time price diff volumn amount type
     def processOneLine(self, line):
-        pass
+        s = line.strip('\n').split('\t')
+        self.data['time'].append(s[0])
+        self.data['price'].append(s[1])
+        self.data['volume'].append(s[3])
+        print repr(s[5])
+        if repr(s[5]) == repr(BUY_STR):
+            self.data['type'] = DealType.BUY
+        elif repr(s[5]) == repr(SELL_STR):
+            self.data['type'] == DealType.SELL
     
-    def doAnalysis(self, file_path):
-        f = open(file_path)
-        line = f.readline()
-        while line:
-            processOneLine(line)
+    def parseFile(self, file_path):
+        try:
+            mylogger("file path %s", file_path)
+            f = open(file_path)
             line = f.readline()
-        f.close()
+            line = f.readline()
+            while line:
+                self.processOneLine(line)
+                line = f.readline()
+            #self.dumpToFile()
+        except Exception, e:
+            print "doAnalysis failed: %s" %str(e)
+        finally:
+            f.close()
+
+    def doAnalysis(self):
+        pass
 
     def run(self):
         while True:
             try:
+                self.initDataStruct()
                 code = analysis_queue.get(False) 
                 mylogger("I got code: %s \n", code)
                 file_path = compose_filename(code)
-                doAnalysis(file_path)
+                self.parseFile(file_path)
+                #self.doAnalysis()
             except Queue.Empty:
-                print "All works have been completed"
-            except Exception:
-                print "ERROR: analysis failed"
+                print "All works have been completed \n"
+                break
+            except Exception, e:
+                print "ERROR: analysis failed %s\n" %str(e)
+
+
+def here_we_go(date_string):
+    init_analysis_queue()
+    threads = []
+    for i in range(thread_pool_num):
+        threads.append(Worker(date_string))
+
+    for t in threads:
+        if t.isAlive():
+            t.join()
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        usage()
+        sys.exit(0)
+    
+    here_we_go(sys.argv[1])
+
+    
+

@@ -99,6 +99,7 @@ def here_we_go(date_string):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         usage()
+        sys.exit(0)
     
     date_string = sys.argv[1]
     here_we_go(date_string)
