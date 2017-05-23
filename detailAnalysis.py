@@ -86,11 +86,13 @@ class Worker(threading.Thread):
         self.data['time'].append(s[0])
         self.data['price'].append(s[1])
         self.data['volume'].append(s[3])
-        print type(s[5])
+        print repr(s[5])
         if repr(s[5]) == repr(BUY_STR):
-            self.data['type'] = DealType.BUY
+            self.data['type'].append(DealType.BUY)
         elif repr(s[5]) == repr(SELL_STR):
-            self.data['type'] == DealType.SELL
+            self.data['type'].append(DealType.SELL)
+        else:
+            self.data['type'].append(DealType.UNKNOW)
     
     def parseFile(self, file_path):
         try:
@@ -101,9 +103,9 @@ class Worker(threading.Thread):
             while line:
                 self.processOneLine(line)
                 line = f.readline()
-            #self.dumpToFile()
+            self.dumpToFile()
         except Exception, e:
-            print "doAnalysis failed: %s" %str(e)
+            print "doAnalysis failed: %s \n" %str(e)
         finally:
             f.close()
 
