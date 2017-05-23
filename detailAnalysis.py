@@ -86,7 +86,7 @@ class Worker(threading.Thread):
         self.data['time'].append(s[0])
         self.data['price'].append(s[1])
         self.data['volume'].append(s[3])
-        print repr(s[5])
+        print type(s[5])
         if repr(s[5]) == repr(BUY_STR):
             self.data['type'] = DealType.BUY
         elif repr(s[5]) == repr(SELL_STR):
