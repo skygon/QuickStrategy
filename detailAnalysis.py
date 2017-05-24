@@ -107,15 +107,21 @@ class Worker(threading.Thread):
                 line = f.readline()
             self.dumpToFile()
         except Exception, e:
-            print "doAnalysis failed: %s \n" %str(e)
+            print "parseFile failed: %s \n" %str(e)
         finally:
             f.close()
+
+    def getBigDealByAmount(self):
+        try:
+            pass
+        except Exception, e:
+            print "getBigDealByAmount error %s \n" %str(e)
 
     def doAnalysis(self):
         try:
             pass
         except Exception, e:
-            print "DoAnalysis error %s \n" %str(e)
+            print "doAnalysis error %s \n" %str(e)
         
 
     def run(self):
