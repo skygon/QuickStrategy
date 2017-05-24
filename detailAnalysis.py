@@ -86,8 +86,8 @@ class Worker(threading.Thread):
     def processOneLine(self, line):
         s = line.strip('\n').split('\t')
         self.data['time'].append(s[0])
-        self.data['price'].append(s[1])
-        self.data['volume'].append(s[3])
+        self.data['price'].append(float(s[1]))
+        self.data['volume'].append(int(s[3]))
         #print repr(s[5])
         if repr(s[5]) == repr(BUY_STR):
             self.data['type'].append(DealType.BUY)
@@ -101,7 +101,7 @@ class Worker(threading.Thread):
             mylogger("file path %s", file_path)
             f = open(file_path)
             line = f.readline()
-            line = f.readline()
+            line = f.readline() #skip title line
             while line:
                 self.processOneLine(line)
                 line = f.readline()
@@ -112,7 +112,11 @@ class Worker(threading.Thread):
             f.close()
 
     def doAnalysis(self):
-        pass
+        try:
+            pass
+        except Exception, e:
+            print "DoAnalysis error %s \n" %str(e)
+        
 
     def run(self):
         while True:
