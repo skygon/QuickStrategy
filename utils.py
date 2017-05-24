@@ -10,7 +10,7 @@ DealType = enum(BUY = 1, SELL = 2, UNKNOW = 3)
 
 BUY_STR = '\xc2\xf2\xc5\xcc'
 SELL_STR = '\xc2\xf4\xc5\xcc'
-###========================================================================================###
+#================================Invalid code========================================================
 invalid_code_file = os.path.join(os.getcwd(), "config", "invalid_code.txt")
 invalid_code = []
 with open(invalid_code_file) as f:
@@ -26,8 +26,16 @@ def isInvalidCode(code):
     return False
 
 
+#===============================Code total volumn============================================================
+code_volumn_file = os.path.join(os.getcwd(), "config", "code_volumn.csv")
+code_volumn = {}
+with open(code_volumn_file) as f:
+    line = f.readline()
+    while line:
+        s = line.strip('\n').split(',')
+        code_volumn[s[0]] = s[1]
+        line = f.readline()
 
 
 if __name__ == '__main__':
-    print DealType.BUY
-    print DealType.SELL
+    print code_volumn
