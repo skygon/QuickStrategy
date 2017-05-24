@@ -4,6 +4,7 @@ import urllib
 import urllib2
 import threading
 import Queue
+from utils import *
 
 #==============================global variables==================================
 # full url example : "http://market.finance.sina.com.cn/downxls.php?date=2017-05-18&symbol=sh603993"
@@ -33,6 +34,8 @@ def read_to_queue(prefix, filename):
     f = open(filename)
     line = f.readline()
     while line:
+        if isInvalidCode(line.strip('\n')):
+            continue
         code = prefix + line.strip('\n')
         download_queue.put(code)
         line = f.readline()

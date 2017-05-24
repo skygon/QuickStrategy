@@ -6,9 +6,10 @@ SELL_STR = '\xc2\xf4\xc5\xcc'
 
 
 #===============================Big deal related=============================
+DEAL_LEVEL = 5
 BIG_DEAL = {}
-# TODO volumn levels
-BIG_DEAL['volumn'] = {}
+# TODO volume levels
+BIG_DEAL['volume'] = {}
 
 # amount levels
 BIG_DEAL['amount'] = {}

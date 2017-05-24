@@ -53,11 +53,13 @@ def mylogger(message, vars):
 #===============================End of helper functions=================================
 
 
-class Worker(threading.Thread):
+class Analyzer(threading.Thread):
     def __init__(self, date_string):
         threading.Thread.__init__(self)
         self.date_string = date_string
         self.data = {}
+        self.big_deal_amount = {}
+        self.big_deal_volume = {}
         self.initDataStruct()
         self.start()
 
@@ -67,6 +69,18 @@ class Worker(threading.Thread):
         self.data['price'] = []
         self.data['volume'] = []
         self.data['type'] = []
+
+        self.big_deal_amount.clear() #We have five levels
+        for i in range(DEAL_LEVEL):
+            self.big_deal_amount[i] = {}
+            self.big_deal_amount[i]['time'] = []
+            self.big_deal_amount[i]['price'] = []
+            self.big_deal_amount[i]['volume'] = []
+            self.big_deal_amount[i]['type'] = []
+
+        self.big_deal_volume.clear()
+        # TODO
+
     
     def dumpToFile(self):
         try:
@@ -111,15 +125,25 @@ class Worker(threading.Thread):
         finally:
             f.close()
 
-    def getBigDealByAmount(self):
+    def getBigDealByAmount(self, level):
         try:
-            pass
+            for i in range(len(self.data['time'])):
+                if self.data['volume'][i] * self.data['price'][i] * 100 > BIG_DEAL['amount'][level]:
+                    print "current: ", self.data['volume'][i] * self.data['price'][i] * 100
+                    self.big_deal_amount[level]['time'].append(self.data['time'][i])
+                    self.big_deal_amount[level]['price'].append(self.data['price'][i])
+                    self.big_deal_amount[level]['volume'].append(self.data['volume'][i])
+                    self.big_deal_amount[level]['type'].append(self.data['type'][i])
+            print self.big_deal_amount[level]
         except Exception, e:
             print "getBigDealByAmount error %s \n" %str(e)
 
     def doAnalysis(self):
         try:
-            pass
+            # Deal level analysis
+            for i in range(DEAL_LEVEL):
+                self.getBigDealByAmount(i)
+            print self.big_deal_amount
         except Exception, e:
             print "doAnalysis error %s \n" %str(e)
         
@@ -144,7 +168,7 @@ def here_we_go(date_string):
     init_analysis_queue()
     threads = []
     for i in range(thread_pool_num):
-        threads.append(Worker(date_string))
+        threads.append(Analyzer(date_string))
 
     for t in threads:
         if t.isAlive():
