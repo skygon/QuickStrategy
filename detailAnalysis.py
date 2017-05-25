@@ -143,7 +143,7 @@ class Analyzer(threading.Thread):
             # Deal level analysis
             for i in range(DEAL_LEVEL):
                 self.getBigDealByAmount(i)
-            print self.big_deal_amount
+            
         except Exception, e:
             print "doAnalysis error %s \n" %str(e)
         
