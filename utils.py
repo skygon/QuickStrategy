@@ -13,9 +13,9 @@ BIG_DEAL['volume'] = {}
 
 # amount levels
 BIG_DEAL['amount'] = {}
-BIG_DEAL['amount'][0] = 30 * 10000
-BIG_DEAL['amount'][1] = 60 * 10000
-BIG_DEAL['amount'][2] = 100 * 10000
+BIG_DEAL['amount'][0] = 50 * 10000
+BIG_DEAL['amount'][1] = 100 * 10000
+BIG_DEAL['amount'][2] = 200 * 10000
 BIG_DEAL['amount'][3] = 500 * 10000
 BIG_DEAL['amount'][4] = 1000 * 10000
 
