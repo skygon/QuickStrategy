@@ -24,3 +24,18 @@ http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetB
 * num 每页显示的数据数目，这里为60
 * page 页码号，从 1 开始， 结束页码为cell(count ／ 60). 更改page的参数值为2和3可以获取剩余的数据
 ### return
+```
+[
+{symbol:"sh603993",name:"洛阳钼业",ticktime:"14:58:40",price:"4.230",volume:"182600",prev_price:"4.230",kind:"D"},{symbol:"sh603993",name:"洛阳钼业",ticktime:"14:58:29",price:"4.230",volume:"141100",prev_price:"4.230",kind:"U"},{symbol:"sh603993",name:"洛阳钼业",ticktime:"14:57:49",price:"4.220",volume:"234900",prev_price:"4.230",kind:"D"},
+...
+]
+```
+U: 买盘 D: 卖盘
+
+## Get big deal summary
+### API
+http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillSum?symbol=sh603993&num=60&sort=ticktime&asc=0&volume=0&amount=500000&type=0&day=2017-05-26
+### params
+amount 只能为50w, 100w, 200w, 500w, 1000w
+### return
+
