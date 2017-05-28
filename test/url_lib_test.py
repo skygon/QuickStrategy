@@ -35,12 +35,21 @@ POOLPOOL4: finance2
 
 y = res.decode('gb2312')
 print type(y)
+
+y = y.replace('symbol', '"symbol"')
+y = y.replace('name', '"name"')
+y = y.replace('ticktime', '"ticktime"')
+y = y.replace('price', '"price"')
+y = y.replace('volume', '"volume"')
+y = y.replace('prev_price', '"prev_price"')
+y = y.replace('kind', '"kind"')
+
 print y
 
 '''
 ValueError: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
 python 的json格式字符串，key必须在双引号之内
-s = '[{"symbol":"sh603993","name":"洛阳钼业","ticktime":"14:58:40","price":"4.230","volume":"182600"},{"symbol":"sh603993","name":"洛阳钼业","ticktime":"14:58:40","price":"4.230","volume":"182600"}]'
+s = '[{"symbol":"sh603993","name":"洛阳钼业","ticktime":"14:58:40","price":"4.230","volume":"182600","prev_price":"4.230","kind":"U"},{"symbol":"sh603993","name":"洛阳钼业","ticktime":"14:58:40","price":"4.230","volume":"182600","prev_price":"4.230","kind":"U"}]'
 x = s.decode('utf-8')
 #print x
 y = json.loads(x)
