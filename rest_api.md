@@ -38,4 +38,13 @@ http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetB
 ### params
 amount 只能为50w, 100w, 200w, 500w, 1000w
 ### return
-
+```
+[{symbol:"sh603993",name:"洛阳钼业",opendate:"2017-05-26",minvol:"0",voltype:"13",totalvol:"6571003",totalvolpct:"0.169",totalamt:"27813787",totalamtpct:"0.169",avgprice:"4.233",kuvolume:"3019703",kuamount:"12791359",kevolume:"0",keamount:"0",kdvolume:"3551300",kdamount:"15022428",stockvol:"38797718",stockamt:"164474123"}]
+```
+* totalvol 该条件大单的成交量，单位：股
+* totalvolpct 占当日成交量的比例
+* totalamt 大单成交额，单位元
+* avgprice 大单成交平均价格
+* kuvolume 主买单
+* kdvolumn 主卖单
+* kevolume 中性
