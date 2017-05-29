@@ -41,7 +41,7 @@ y = y.replace('name', '"name"')
 z = y.replace('ticktime', '"ticktime"')
 #z = y.replace('price', '"price"')
 z = z.replace('volume', '"volume"')
-z = z.replace('prev_price', '"xxxxx"')
+z = z.replace('prev_price', '"prev"')
 z = z.replace('kind', '"kind"')
 z = z.replace('price', '"price"')
 
