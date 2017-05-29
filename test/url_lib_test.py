@@ -38,13 +38,14 @@ print type(y)
 
 y = y.replace('symbol', '"symbol"')
 y = y.replace('name', '"name"')
-y = y.replace('ticktime', '"ticktime"')
-y = y.replace('price', '"price"')
-y = y.replace('volume', '"volume"')
-y = y.replace('prev_price', '"prev_price"')
-y = y.replace('kind', '"kind"')
+z = y.replace('ticktime', '"ticktime"')
+#z = y.replace('price', '"price"')
+z = z.replace('volume', '"volume"')
+z = z.replace('prev_price', '"xxxxx"')
+z = z.replace('kind', '"kind"')
+z = z.replace('price', '"price"')
 
-print y
+print z
 
 '''
 ValueError: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
@@ -57,7 +58,8 @@ print type(y)
 print y
 '''
 
-s = json.loads(y)
+s = json.loads(z)
+print s[0]['symbol']
 
 
 
