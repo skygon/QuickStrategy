@@ -40,6 +40,11 @@ class RTDA(object):
         print "url is %s" %(url)
         return url
 
+    def getBillListCount(self):
+        try:
+        except Exception, e:
+            print "getBillListCount error: %s \n" %(str(e))
+    
     def getBillList(self):
         try:
             url = self.composeURL()
