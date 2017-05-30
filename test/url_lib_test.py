@@ -8,7 +8,7 @@ request = urllib2.Request(url)
 
 response = urllib2.urlopen(request)
 
-print response.getcode()
+print response.getcode() # It's an Integer
 print response.geturl()
 res = response.read()
 
@@ -38,14 +38,14 @@ print type(y)
 
 y = y.replace('symbol', '"symbol"')
 y = y.replace('name', '"name"')
-z = y.replace('ticktime', '"ticktime"')
+y = y.replace('ticktime', '"ticktime"')
 #z = y.replace('price', '"price"')
-z = z.replace('volume', '"volume"')
-z = z.replace('prev_price', '"prev"')
-z = z.replace('kind', '"kind"')
-z = z.replace('price', '"price"')
+y = y.replace('volume', '"volume"')
+y = y.replace('prev_price', '"prev"')
+y = y.replace('kind', '"kind"')
+y = y.replace('price', '"price"')
 
-print z
+print y
 
 '''
 ValueError: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
@@ -58,7 +58,7 @@ print type(y)
 print y
 '''
 
-s = json.loads(z)
+s = json.loads(y)
 print s[0]['symbol']
 
 
