@@ -7,6 +7,8 @@ SELL_STR = '\xc2\xf4\xc5\xcc'
 SHA = os.path.join(os.getcwd(), "config", "sh_a.txt")
 SZA = os.path.join(os.getcwd(), "config", "sz_a.txt")
 
+DEFAULT_PAGE_SIZE = 60
+
 code_queue = Queue.Queue()
 #===============================Big deal related=============================
 DEAL_LEVEL = 5

@@ -1,5 +1,6 @@
 import json
 import urllib2
+from utils import *
 
 BILL_LIST = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillList?"
 BILL_LIST_COUNT = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillListCount?"
@@ -19,7 +20,7 @@ class RTDA(object):
         self.initParamsList()
         
     def initParamsList(self):
-        self.params_list['num'] = 60
+        self.params_list['num'] = DEFAULT_PAGE_SIZE
         self.params_list['page'] = 1 #first page
         self.params_list['sort'] = "ticktime"
         self.params_list['asc'] = 0
