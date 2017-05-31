@@ -23,46 +23,55 @@ class RTDA(object):
         self.day = date_string
         # params day must as the last item
         self.params_list = {}
+        self.params_list['bill'] = {}
+        self.params_list['summary'] = {}
         self.initParamsList()
         
     def initParamsList(self):
-        self.params_list['num'] = DEFAULT_PAGE_SIZE
-        self.params_list['page'] = 1 #first page
-        self.params_list['sort'] = "ticktime"
-        self.params_list['asc'] = 0
-        self.params_list['volume'] = 0 # By default, use amount mode
-        self.params_list['type'] = 0
+        self.params_list['bill']['num'] = DEFAULT_PAGE_SIZE
+        self.params_list['bill']['page'] = 1 #first page
+        self.params_list['bill']['sort'] = "ticktime"
+        self.params_list['bill']['asc'] = 0
+        self.params_list['bill']['volume'] = 0 # By default, use amount mode
+        self.params_list['bill']['type'] = 0
         # change the following params
         #self.params_list['symbol'] = "change_me"
-        self.params_list['amount'] = 50 * 100 * 100
+        self.params_list['bill']['amount'] = 50 * 100 * 100
         #self.params_list['day'] = "1970-01-01"
     
     def setCode(self, code):
         self.code = code
 
-    def setParams(self, **kwargs):
+    def setParams(self, param_type, **kwargs):
         for k, v in kwargs.items():
-            self.params_list[k] = v
+            self.params_list[param_type][k] = v
     
-    def composeURL(self, bill_type):
+    def composeURL(self, api_type):
         url = ""
-        if bill_type == "bill_list":
+        param_type = ""
+        if api_type == "bill_list":
             url = BILL_LIST + "symbol=" + self.code
-        elif bill_type == "bill_list_count":
+            param_type = 'bill'
+        elif api_type == "bill_list_count":
             url = BILL_LIST_COUNT + "symbol=" + self.code
-        elif bill_type == "bill_list_summary":
+            param_type = 'bill'
+        elif api_type == "bill_list_summary":
             url = BILL_LIST_SUMMARY + "symbol=" + self.code
+            param_type = 'bill'
+        elif api_type == "stocks_summary":
+            url = STOCKS_SUMMARY
+            param_type = 'summary'
         else:
             raise Exception("composeURL error. Unsupported bill type")
-        for k, v in self.params_list.items():
+        for k, v in self.params_list[param_type].items():
             url = url + "&" + k + "=" + str(v)
         
         url = url + "&day=" + self.day
         print "url is %s" %(url)
         return url
 
-    def getRawData(self, bill_type):
-        url = self.composeURL(bill_type)
+    def getRawData(self, api_type):
+        url = self.composeURL(api_type)
         request = urllib2.Request(url)
         response = urllib2.urlopen(request)
         ret = response.getcode()
@@ -140,7 +149,7 @@ class RTDA(object):
 if __name__ == "__main__":
     rtda = RTDA("2017-05-26")
     rtda.setCode("sh603993")
-    rtda.setParams(amount=200*100*100, type=0)
+    rtda.setParams('bill', amount=200*100*100, type=0)
     data = rtda.getBillListSummary()
     print data
 
