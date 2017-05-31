@@ -10,8 +10,6 @@ from utils import *
 # full url example : "http://market.finance.sina.com.cn/downxls.php?date=2017-05-18&symbol=sh603993"
 base_url = "http://market.finance.sina.com.cn/downxls.php"
 dest_dir = os.path.join(os.getcwd(), "detail_data")
-SHA = os.path.join(os.getcwd(), "config", "sh_a.txt")
-SZA = os.path.join(os.getcwd(), "config", "sz_a.txt")
 
 thread_pool_num = 10
 #code_file = ""
@@ -30,21 +28,10 @@ def usage():
     example : python autoDownload.py "2017-05-18"
     '''
 
-def read_to_queue(prefix, filename):
-    f = open(filename)
-    line = f.readline()
-    while line:
-        if isInvalidCode(line.strip('\n')):
-            continue
-        code = prefix + line.strip('\n')
-        download_queue.put(code)
-        line = f.readline()
-    f.close()
-
 def init_download_queue():
     # read codes from files
-    read_to_queue('sh', SHA)
-    read_to_queue('sz', SZA)
+    read_to_queue('sh', SHA, download_queue)
+    read_to_queue('sz', SZA, download_queue)
 
 def compose_url(date_string, code):
     full_url = base_url + "?date=" + date_string + "&symbol=" + code

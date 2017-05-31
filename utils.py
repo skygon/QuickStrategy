@@ -1,10 +1,13 @@
 import os
-
+import Queue
 #===================================Global variables=========================
 BUY_STR = '\xc2\xf2\xc5\xcc'
 SELL_STR = '\xc2\xf4\xc5\xcc'
 
+SHA = os.path.join(os.getcwd(), "config", "sh_a.txt")
+SZA = os.path.join(os.getcwd(), "config", "sz_a.txt")
 
+code_queue = Queue.Queue()
 #===============================Big deal related=============================
 DEAL_LEVEL = 5
 BIG_DEAL = {}
@@ -34,6 +37,8 @@ with open(invalid_code_file) as f:
         invalid_code.append(line.strip('\n'))
         line = f.readline()
 
+#print invalid_code
+
 def isInvalidCode(code):
     if code in invalid_code:
         return True
@@ -51,6 +56,22 @@ with open(code_volumn_file) as f:
         code_volumn[s[0]] = s[1]
         line = f.readline()
 
+#==========================Helper functions========================================================
+def read_to_queue(prefix, filename, dest_queue):
+    f = open(filename)
+    line = f.readline()
+    while line:
+        if isInvalidCode(line.strip('\n')):
+            line = f.readline()
+            continue
+        code = prefix + line.strip('\n')
+        dest_queue.put(code)
+        line = f.readline()
+    f.close()
+
+read_to_queue('sh', SHA, code_queue)
+read_to_queue('sz', SZA, code_queue)
+
 
 if __name__ == '__main__':
-    print code_volumn
+    print code_queue
