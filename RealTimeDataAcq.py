@@ -8,6 +8,9 @@ BILL_LIST_SUMMARY = "http://vip.stock.finance.sina.com.cn/quotes_service/api/jso
 #example url:
 #http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillList?symbol=sh603993&num=60&page=1&sort=ticktime&asc=0&volume=0&amount=200000&type=0&day=2017-05-26
 
+'''
+Used for both real time strategy data fetching and machine learning data collection. 
+'''
 class RTDA(object):
     def __init__(self, date_string):
         self.day = date_string
