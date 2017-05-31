@@ -6,8 +6,14 @@ BILL_LIST = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php
 BILL_LIST_COUNT = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillListCount?"
 BILL_LIST_SUMMARY = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillSum?"
 
-#example url:
+STOCKS_SUMMARY = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?"
+g_pages = 5 # We think the first five pages are most useful
+
+# Bill example url:
 #http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillList?symbol=sh603993&num=60&page=1&sort=ticktime&asc=0&volume=0&amount=200000&type=0&day=2017-05-26
+
+# Summary example list
+#http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page=1&num=20&sort=changepercent&asc=0&node=hs_a&symbol=&_s_r_a=page
 
 '''
 Used for both real time strategy data fetching and machine learning data collection. 
