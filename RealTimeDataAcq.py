@@ -14,10 +14,14 @@ g_pages = 5 # We think the first five pages are most useful
 
 # Summary example list
 #http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page=1&num=20&sort=changepercent&asc=0&node=hs_a&symbol=&_s_r_a=page
+# TODO keep collection the summary data and store data somewhere, such as redis.
 
 '''
 Used for both real time strategy data fetching and machine learning data collection. 
 '''
+# param_type : bill, summary
+# api_type : bill_list, bill_list_count, bill_list_summary, stocks_summary
+
 class RTDA(object):
     def __init__(self, date_string):
         self.day = date_string
@@ -28,6 +32,7 @@ class RTDA(object):
         self.initParamsList()
         
     def initParamsList(self):
+        # bill param type
         self.params_list['bill']['num'] = DEFAULT_PAGE_SIZE
         self.params_list['bill']['page'] = 1 #first page
         self.params_list['bill']['sort'] = "ticktime"
@@ -35,9 +40,18 @@ class RTDA(object):
         self.params_list['bill']['volume'] = 0 # By default, use amount mode
         self.params_list['bill']['type'] = 0
         # change the following params
-        #self.params_list['symbol'] = "change_me"
         self.params_list['bill']['amount'] = 50 * 100 * 100
         #self.params_list['day'] = "1970-01-01"
+
+        # summary param type
+        self.params_list['summary']['page'] = 1 # page starts from 1. We only interst at the first 500 stocks.
+        self.params_list['summary']['num'] = DEFAULT_PAGE_SIZE # num can be any integer. 
+        self.params_list['summary']['sort'] = "changepercent"
+        self.params_list['summary']['asc'] = 0
+        self.params_list['summary']['node'] = "hs_a"
+        self.params_list['summary']['symbol'] = ""
+        self.params_list['summary']['_s_r_a'] = "page"
+
     
     def setCode(self, code):
         self.code = code
@@ -66,7 +80,8 @@ class RTDA(object):
         for k, v in self.params_list[param_type].items():
             url = url + "&" + k + "=" + str(v)
         
-        url = url + "&day=" + self.day
+        if api_type != "stocks_summary":
+            url = url + "&day=" + self.day
         print "url is %s" %(url)
         return url
 
@@ -104,6 +119,14 @@ class RTDA(object):
             return json.loads(data)
         except Exception, e:
             print "getBillListSummary error : %s \n" %(str(e))
+
+    def getStocksSummary(self):
+        try:
+            text = self.getRawData('stocks_summary')
+            data = self.handleResponseStocksSummary(text)
+            return json.loads(data)
+        except Exception, e:
+            print "getStocksSummary error: %s \n" %(str(e))
 
     def handleResponseBillList(self, data):
         data = data.replace('symbol', '"symbol"')
@@ -145,11 +168,42 @@ class RTDA(object):
         #print data
         return data
 
+    def handleResponseStocksSummary(self, data):
+        data = data.replace('symbol', '"symbol"')
+        data = data.replace('code', '"code"')
+        data = data.replace('name', '"name"')
+        data = data.replace('trade', '"trade"')
+        data = data.replace('pricechange', '"pricechange"')
+        #side affect
+        data = data.replace('per', '"per"')
+        data = data.replace('change"per"cent', '"changepercent"')
+        data = data.replace('buy', '"buy"')
+        data = data.replace('sell', '"sell"')
+        data = data.replace('settlement', '"settlement"')
+        data = data.replace('open', '"open"')
+        data = data.replace('high', '"high"')
+        data = data.replace('low', '"low"')
+        data = data.replace('volume', '"volume"')
+        data = data.replace('amount', '"amount"')
+        data = data.replace('ticktime', '"ticktime"')
+        data = data.replace('pb', '"pb"')
+        data = data.replace('mktcap', '"mktcap"')
+        data = data.replace('nmc', '"nmc"')
+        data = data.replace('turnoverratio', '"turnoverratio"')
+        return data
+
+
 
 if __name__ == "__main__":
     rtda = RTDA("2017-05-26")
     rtda.setCode("sh603993")
-    rtda.setParams('bill', amount=200*100*100, type=0)
-    data = rtda.getBillListSummary()
-    print data
+    #rtda.setParams('bill', amount=200*100*100, type=0)
+    #data = rtda.getBillListSummary()
+
+    # test summary api
+    rtda.setParams('summary', num=200)
+    data = rtda.getStocksSummary()
+    print len(data)
+    print type(data)
+    print type(data[0])
 
