@@ -201,9 +201,9 @@ if __name__ == "__main__":
     #data = rtda.getBillListSummary()
 
     # test summary api
-    rtda.setParams('index', num=200)
+    rtda.setParams('index', num=20)
     data = rtda.getStocksIndex()
     print len(data)
-    print type(data)
-    print type(data[0])
+    
+
 
