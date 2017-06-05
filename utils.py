@@ -15,6 +15,19 @@ TABLE_SUMMARY = "summary"
 INDEX = "index"
 
 
+# special days since 2016-10-21
+special_days = []
+special_days.append(datetime.datetime.strptime('2017-01-02', '%Y-%m-%d'))
+special_days.append(datetime.datetime.strptime('2017-01-27', '%Y-%m-%d'))
+special_days.append(datetime.datetime.strptime('2017-02-01', '%Y-%m-%d'))
+special_days.append(datetime.datetime.strptime('2017-02-02', '%Y-%m-%d'))
+special_days.append(datetime.datetime.strptime('2017-04-04', '%Y-%m-%d'))
+special_days.append(datetime.datetime.strptime('2017-05-01', '%Y-%m-%d'))
+special_days.append(datetime.datetime.strptime('2017-05-29', '%Y-%m-%d'))
+special_days.append(datetime.datetime.strptime('2017-05-30', '%Y-%m-%d'))
+#TODO add more in 2017
+
+
 code_queue = Queue.Queue()
 #===============================Big deal related=============================
 DEAL_LEVEL = 5

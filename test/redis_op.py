@@ -1,7 +1,8 @@
 import redis
 import sys
 import json
-sys.path.append('E:\mywork\QuickStrategy')
+#sys.path.append('E:\mywork\QuickStrategy')
+sys.path.append('/Users/yuncui/Documents/QuickStrategy')
 from RealTimeDataAcq import RTDA
 from RedisOperator import RedisOperator
 from utils import *
