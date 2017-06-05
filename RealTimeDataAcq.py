@@ -6,7 +6,7 @@ BILL_LIST = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php
 BILL_LIST_COUNT = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillListCount?"
 BILL_LIST_SUMMARY = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_Bill.GetBillSum?"
 
-STOCKS_SUMMARY = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?"
+STOCKS_INDEX = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?"
 g_pages = 5 # We think the first five pages are most useful
 
 # Bill example url:
@@ -20,7 +20,7 @@ g_pages = 5 # We think the first five pages are most useful
 Used for both real time strategy data fetching and machine learning data collection. 
 '''
 # param_type : bill, summary
-# api_type : bill_list, bill_list_count, bill_list_summary, stocks_summary
+# api_type : bill_list, bill_list_count, bill_list_summary, STOCKS_INDEX
 
 class RTDA(object):
     def __init__(self, date_string):
@@ -28,7 +28,7 @@ class RTDA(object):
         # params day must as the last item
         self.params_list = {}
         self.params_list['bill'] = {}
-        self.params_list['summary'] = {}
+        self.params_list['index'] = {}
         self.initParamsList()
         
     def initParamsList(self):
@@ -44,13 +44,13 @@ class RTDA(object):
         #self.params_list['day'] = "1970-01-01"
 
         # summary param type
-        self.params_list['summary']['page'] = 1 # page starts from 1. We only interst at the first 500 stocks.
-        self.params_list['summary']['num'] = DEFAULT_PAGE_SIZE # num can be any integer. 
-        self.params_list['summary']['sort'] = "changepercent"
-        self.params_list['summary']['asc'] = 0
-        self.params_list['summary']['node'] = "hs_a"
-        self.params_list['summary']['symbol'] = ""
-        self.params_list['summary']['_s_r_a'] = "page"
+        self.params_list['index']['page'] = 1 # page starts from 1. We only interst at the first 500 stocks.
+        self.params_list['index']['num'] = DEFAULT_PAGE_SIZE # num can be any integer. 
+        self.params_list['index']['sort'] = "changepercent"
+        self.params_list['index']['asc'] = 0
+        self.params_list['index']['node'] = "hs_a"
+        self.params_list['index']['symbol'] = ""
+        self.params_list['index']['_s_r_a'] = "page"
 
     
     def setCode(self, code):
@@ -72,15 +72,15 @@ class RTDA(object):
         elif api_type == "bill_list_summary":
             url = BILL_LIST_SUMMARY + "symbol=" + self.code
             param_type = 'bill'
-        elif api_type == "stocks_summary":
-            url = STOCKS_SUMMARY
-            param_type = 'summary'
+        elif api_type == "stocks_index":
+            url = STOCKS_INDEX
+            param_type = 'index'
         else:
             raise Exception("composeURL error. Unsupported bill type")
         for k, v in self.params_list[param_type].items():
             url = url + "&" + k + "=" + str(v)
         
-        if api_type != "stocks_summary":
+        if api_type != "stocks_index":
             url = url + "&day=" + self.day
         print "url is %s" %(url)
         return url
@@ -120,13 +120,13 @@ class RTDA(object):
         except Exception, e:
             print "getBillListSummary error : %s \n" %(str(e))
 
-    def getStocksSummary(self):
+    def getStocksIndex(self):
         try:
-            text = self.getRawData('stocks_summary')
-            data = self.handleResponseStocksSummary(text)
+            text = self.getRawData('stocks_index')
+            data = self.handleResponseStocksIndex(text)
             return json.loads(data)
         except Exception, e:
-            print "getStocksSummary error: %s \n" %(str(e))
+            print "getStocksIndex error: %s \n" %(str(e))
 
     def handleResponseBillList(self, data):
         data = data.replace('symbol', '"symbol"')
@@ -168,7 +168,7 @@ class RTDA(object):
         #print data
         return data
 
-    def handleResponseStocksSummary(self, data):
+    def handleResponseStocksIndex(self, data):
         data = data.replace('symbol', '"symbol"')
         data = data.replace('code', '"code"')
         data = data.replace('name', '"name"')
@@ -201,8 +201,8 @@ if __name__ == "__main__":
     #data = rtda.getBillListSummary()
 
     # test summary api
-    rtda.setParams('summary', num=200)
-    data = rtda.getStocksSummary()
+    rtda.setParams('index', num=200)
+    data = rtda.getStocksIndex()
     print len(data)
     print type(data)
     print type(data[0])
