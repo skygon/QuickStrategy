@@ -59,11 +59,6 @@ class DataCollection(threading.Thread):
                 print "DataCollection Error : %s \n" %(str(e))
 
 
-def getFullData(date_string):
-    pass
-
-def getRealTimeData(date_string):
-    pass
 
 if __name__ == "__main__":
     tdc = []

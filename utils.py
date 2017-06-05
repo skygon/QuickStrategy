@@ -9,6 +9,12 @@ SZA = os.path.join(os.getcwd(), "config", "sz_a.txt")
 
 DEFAULT_PAGE_SIZE = 60
 
+#redis related
+TABLE_DETAIL = "detail"
+TABLE_SUMMARY = "summary"
+INDEX = "index"
+
+
 code_queue = Queue.Queue()
 #===============================Big deal related=============================
 DEAL_LEVEL = 5
