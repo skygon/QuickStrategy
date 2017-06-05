@@ -60,6 +60,8 @@ class DataCollection(threading.Thread):
 
 
 
+
+
 if __name__ == "__main__":
     tdc = []
     for i in range(dc_thread_poll):
