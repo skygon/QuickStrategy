@@ -14,6 +14,9 @@ class RedisOperator(object):
         self.con.hset(table, field, s)
     
     #==== redis command wrapper=======================#
+    def hset(self, table, field, value):
+        return self.con.hset(table, field, value)
+    
     def hget(self, table, field):
         return self.con.hget(table, field)
     

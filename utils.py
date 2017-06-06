@@ -1,5 +1,6 @@
 import os
 import Queue
+import datetime
 #===================================Global variables=========================
 BUY_STR = '\xc2\xf2\xc5\xcc'
 SELL_STR = '\xc2\xf4\xc5\xcc'
@@ -10,6 +11,12 @@ SZA = os.path.join(os.getcwd(), "config", "sz_a.txt")
 DEFAULT_PAGE_SIZE = 60
 
 #redis related
+redis_conf = {}
+redis_conf['name'] = {} # naming related configuration
+redis_conf['name']['bill_list'] = 'detail'
+redis_conf['name']['bill_list_summary'] = 'summary'
+redis_conf['name']['stocks_index'] = 'index'
+
 TABLE_DETAIL = "detail"
 TABLE_SUMMARY = "summary"
 INDEX = "index"
