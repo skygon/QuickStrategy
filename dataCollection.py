@@ -43,7 +43,7 @@ class DataCollection(threading.Thread):
     '''
     def __init__(self, data_type, api_type, level, date_string):
         threading.Thread.__init__(self)
-        self.data_type = data_type # used for params
+        self.data_type = data_type # used for params, bill or index
         self.api_type = api_type
         self.level = level
         self.date_string = date_string
@@ -120,7 +120,7 @@ class DataCollection(threading.Thread):
 if __name__ == "__main__":
     tdc = []
     for i in range(dc_thread_poll):
-        tdc.append(DataCollection('bill', 'bill_list_summary', 4, '2017-06-05'))
+        tdc.append(DataCollection('index', 'stocks_index', 0, '2017-06-05'))
 
     for t in tdc:
         if t.isAlive():
