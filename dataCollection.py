@@ -15,32 +15,47 @@ test_queue.put("sh603993")
 for_debug = True
 
 class DataCollection(threading.Thread):
-    def __init__(self, date_string):
+    '''
+    judge: by default, amount. Currently, volume is not supported
+    data_type: bill_list, bill_list_summary, stocks_index
+    level: 0 - 4.
+    '''
+    def __init__(self, data_type, level, date_string):
         threading.Thread.__init__(self)
+        self.data_type = data_type
+        self.level = level
         self.date_string = date_string
         self.rtda = RTDA(date_string)
         self.start()
 
     def processOneCode(self, code):
         self.rtda.setCode(code)
-        self.rtda.setParams(amount=20*100*100)
-        count = self.rtda.getBillListCount()
-        print count
-        #data_summary = self.rtda.getBillListSummary()
-        self.fetchDetails(count)
-        #TODO write to redis
+        self.rtda.setParams(amount=BIG_DEAL['amount'][self.level])
+        if self.data_type == 'bill_list':
+            self.getBillList()
+        elif self.data_type == 'bill_list_summary':
+            self.getBillListSummary()
+        elif self.data_type == 'stocks_index':
+            self.getStocksIndex()
         
 
+    def getStocksIndex(self):
+        pass
+
+    def getBillListSummary(self):
+        pass
+
+    def getBillList(self):
+        pass
     
-    def fetchDetails(self, count):
-        pages = count / DEFAULT_PAGE_SIZE
-        if count % DEFAULT_PAGE_SIZE > 0:
-            pages = pages + 1
-        
-        for i in range(pages):
-            self.rtda.setParams(amount=20*100*100, page=i+1)
+    def fetchByPage(self, page, data_type):
+        self.rtda.setParams(amount=BIG_DEAL['amount'][self.level], page=i+1)
+        if data_type == 'bill_list':
             page_data = self.rtda.getBillList()
-            print page_data
+        elif data_type == 'stocks_index':
+            page_data = self.rtda.getStocksIndex()
+        
+        return page_data
 
 
     def run(self):
