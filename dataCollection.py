@@ -120,7 +120,7 @@ class DataCollection(threading.Thread):
 if __name__ == "__main__":
     tdc = []
     for i in range(dc_thread_poll):
-        tdc.append(DataCollection('bill', 'bill_list_summary', 0, '2017-06-05'))
+        tdc.append(DataCollection('bill', 'bill_list_summary', 4, '2017-06-05'))
 
     for t in tdc:
         if t.isAlive():
