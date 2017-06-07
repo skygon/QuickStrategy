@@ -124,7 +124,11 @@ class RTDA(object):
         try:
             text = self.getRawData('stocks_index')
             data = self.handleResponseStocksIndex(text)
-            return json.loads(data)
+            #return json.loads(data)
+            jd = json.loads(data)
+            print type(jd[3])
+            print jd[3]['symbol']
+            return jd
         except Exception, e:
             print "getStocksIndex error: %s \n" %(str(e))
 
@@ -205,5 +209,7 @@ if __name__ == "__main__":
     data = rtda.getStocksIndex()
     print len(data)
     
+    print json.dumps(data[3])
+
 
 

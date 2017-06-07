@@ -6,14 +6,16 @@ from RedisOperator import RedisOperator
 from utils import *
 
 # weight
-# For each level, if kuvolume >= k * kdvolume, weight add level+1, k should larger than 1.5. 
+# For each level, if kuvolume >= k * kdvolume, weight add level+1. How to set value of k is a key point
 # All codes will be sorted by weight
 
 class MyAI(threading.Thread):
-    def __init__(self):
+    def __init__(self, day_index):
         threading.Thread.__init__(self)
         self.k = 1.6
         self.prev_ku = 0
+        self.prev_kd = 0 
+        self.day_index = day_index
         self.weight = {}
         self.redis = RedisOperator("localhost", 6379, 0)
         self.start()
@@ -21,24 +23,29 @@ class MyAI(threading.Thread):
     def processOneCode(self):
         self.weight[self.code] = 0
         for i in range(5):
-            table = "summary_0_amount_" + str(4-i)
+            table = "summary_" + str(self.day_index) + "_amount_" + str(4-i)
             data = self.redis.hget(table, self.code)
             if data is None:
                 continue
             data = json.loads(data)
-            print type(data)
+            #print type(data)
             self.weight[self.code] += self.judgeData(data, 5-i)
+
+    def getCodeWeight(self, code):
+        return self.weight[code]
 
     def sortWeight(self):
         # sort by value
         return sorted(self.weight.items(), key=operator.itemgetter(1), reverse=True)
 
     def judgeData(self, data, level):
-        if self.prev_ku == data['kuvolume']:
-            return 0
-        
-        self.prev_ku = data['kuvolume']
-        if int(data['kuvolume']) >= int(data['kdvolume']) * self.k:
+        real_ku = int(data['kuvolume']) - self.prev_ku
+        real_kd = int(data['kdvolume']) - self.prev_kd
+
+        self.prev_ku += real_ku
+        self.prev_kd += real_kd
+
+        if real_ku > real_kd * self.k:
             return level
 
         return 0
@@ -61,4 +68,4 @@ class MyAI(threading.Thread):
 
 
 if __name__ == "__main__":
-    myAI = MyAI()
+    myAI = MyAI(0)

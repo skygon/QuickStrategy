@@ -12,6 +12,10 @@ class RedisOperator(object):
     def hsetJson(self, table, field, value):
         s = json.dumps(value)
         self.con.hset(table, field, s)
+
+    def rpushJson(self, index_list, value):
+        s = json.dumps(value)
+        return self.con.rpush(index_list, s)
     
     #==== redis command wrapper=======================#
     def hset(self, table, field, value):
@@ -22,9 +26,16 @@ class RedisOperator(object):
     
     def hlen(self, table):
         return self.con.hlen(table)
+
+    def lindex(self, index_list, index):
+        return self.con.lindex(index_list, index)
     
-    def rpush(self, index_list, value):
-        return self.con.rpush(index_list, value)
+
+if __name__ == "__main__":
+    r = RedisOperator("localhost", 6379, 0)
+    data = r.lindex('index_2', 3)
+    print data
+    print json.loads(data)
     
 
     

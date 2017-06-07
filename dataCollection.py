@@ -10,7 +10,7 @@ Use queue and multithreading to fetch real time/ current day's full data.
 Full data is used for machine learning.
 Real time data for making quick strategy.
 '''
-dc_thread_poll = 1
+dc_thread_poll = 500
 test_queue = Queue.Queue()
 test_queue.put("sh603993")
 for_debug = False
@@ -42,15 +42,16 @@ class DataCollection(threading.Thread):
     api_type: bill_list, bill_list_summary, stocks_index
     level: 0 - 4.
     '''
-    def __init__(self, data_type, api_type, level, date_string, day_index):
+    def __init__(self, data_type, api_type, level, date_string, day_index, db=0):
         threading.Thread.__init__(self)
         self.data_type = data_type # used for params, bill or index
         self.api_type = api_type
         self.level = level
         self.date_string = date_string
         self.day_index = day_index
+        self.db = db
         self.rtda = RTDA(date_string)
-        self.redis = RedisOperator("localhost", 6379, 0)
+        self.redis = RedisOperator("localhost", 6379, self.db)
         # add table index to redis
         self.addTableIndex()
         self.start()
@@ -92,7 +93,7 @@ class DataCollection(threading.Thread):
             if data is None:
                 continue
             for i in range(len(data)):
-                self.redis.rpush(self.data_table, data[i])
+                self.redis.rpushJson(self.data_table, data[i])
 
     def getBillListSummary(self):
         data = self.rtda.getBillListSummary()[0] # return one element array
@@ -125,13 +126,26 @@ class DataCollection(threading.Thread):
 
 
 
-
-
-if __name__ == "__main__":
+# currently, we need to manually change the level and run this function several times.
+def getBillDetail(day_index, date_string):
+    # 5 levels
     tdc = []
+    level = 4
+    print "================================================== \n"
+    print "Start Level %s\n" %(level)
     for i in range(dc_thread_poll):
-        tdc.append(DataCollection('index', 'stocks_index', 0, '2017-06-06', 1))
+        tdc.append(DataCollection('bill', 'bill_list_summary', level, date_string, day_index))
+        #level += 1
+        #level %= 5
 
     for t in tdc:
         if t.isAlive():
             t.join()
+
+def getIndex(day_index):
+    dc = DataCollection('index', 'stocks_index', 0, "", day_index)
+
+
+if __name__ == "__main__":
+    #getBillDetail(1, "2017-06-06")
+    getIndex(2)
