@@ -10,7 +10,7 @@ Use queue and multithreading to fetch real time/ current day's full data.
 Full data is used for machine learning.
 Real time data for making quick strategy.
 '''
-dc_thread_poll = 300
+dc_thread_poll = 1
 test_queue = Queue.Queue()
 test_queue.put("sh603993")
 for_debug = False
@@ -33,6 +33,7 @@ for_debug = False
 # == key : summary_0_amount_0 summary_0_amount_1 ...
 # == field <-> code
 # == value  : json format string
+index_count = 3200
 
 class DataCollection(threading.Thread):
     '''
@@ -41,12 +42,13 @@ class DataCollection(threading.Thread):
     api_type: bill_list, bill_list_summary, stocks_index
     level: 0 - 4.
     '''
-    def __init__(self, data_type, api_type, level, date_string):
+    def __init__(self, data_type, api_type, level, date_string, day_index):
         threading.Thread.__init__(self)
         self.data_type = data_type # used for params, bill or index
         self.api_type = api_type
         self.level = level
         self.date_string = date_string
+        self.day_index = day_index
         self.rtda = RTDA(date_string)
         self.redis = RedisOperator("localhost", 6379, 0)
         # add table index to redis
@@ -57,27 +59,40 @@ class DataCollection(threading.Thread):
     def addTableIndex(self):
         table = redis_conf['name'][self.api_type]
 
-        self.redis.hset(table, 'day_index', 0)
+        self.redis.hset(table, 'day_index', self.day_index)
         self.redis.hset(table, 'sort_type', 'amount')
         self.redis.hset(table, 'level', self.level)
 
-        self.data_table = table + "_" + str(0) + '_amount_' + str(self.level)
+        if self.data_type == "index":
+            self.data_table = table + "_" + str(self.day_index)
+        else:
+            self.data_table = table + "_" + str(self.day_index) + '_amount_' + str(self.level)
+       
     
 
     def processOneCode(self, code):
         self.code = code
         self.rtda.setCode(code)
-        self.rtda.setParams(self.data_type, amount=BIG_DEAL['amount'][self.level])
+        
         if self.api_type == 'bill_list':
+            self.rtda.setParams(self.data_type, amount=BIG_DEAL['amount'][self.level])
             self.getBillList()
         elif self.api_type == 'bill_list_summary':
+            self.rtda.setParams(self.data_type, amount=BIG_DEAL['amount'][self.level])
             self.getBillListSummary()
         elif self.api_type == 'stocks_index':
+            self.rtda.setParams(self.data_type, num=80)
             self.getStocksIndex()
         
 
     def getStocksIndex(self):
-        pass
+        for i in range(index_count / 80):
+            self.rtda.setParams('index', page=i+1)
+            data = self.rtda.getStocksIndex()
+            if data is None:
+                continue
+            for i in range(len(data)):
+                self.redis.rpush(self.data_table, data[i])
 
     def getBillListSummary(self):
         data = self.rtda.getBillListSummary()[0] # return one element array
@@ -87,18 +102,13 @@ class DataCollection(threading.Thread):
 
     def getBillList(self):
         pass
-    
-    def fetchByPage(self, page, api_type):
-        self.rtda.setParams(amount=BIG_DEAL['amount'][self.level], page=i+1)
-        if api_type == 'bill_list':
-            page_data = self.rtda.getBillList()
-        elif api_type == 'stocks_index':
-            page_data = self.rtda.getStocksIndex()
-        
-        return page_data
 
 
     def run(self):
+        if self.data_type == 'index':
+            self.processOneCode("sh000001")
+            return
+        
         while True:
             try:
                 if for_debug:
@@ -120,7 +130,7 @@ class DataCollection(threading.Thread):
 if __name__ == "__main__":
     tdc = []
     for i in range(dc_thread_poll):
-        tdc.append(DataCollection('index', 'stocks_index', 0, '2017-06-05'))
+        tdc.append(DataCollection('index', 'stocks_index', 0, '2017-06-06', 1))
 
     for t in tdc:
         if t.isAlive():

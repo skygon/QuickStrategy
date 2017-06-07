@@ -23,5 +23,8 @@ class RedisOperator(object):
     def hlen(self, table):
         return self.con.hlen(table)
     
+    def rpush(self, index_list, value):
+        return self.con.rpush(index_list, value)
+    
 
     
