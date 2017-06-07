@@ -10,7 +10,7 @@ Use queue and multithreading to fetch real time/ current day's full data.
 Full data is used for machine learning.
 Real time data for making quick strategy.
 '''
-dc_thread_poll = 500
+dc_thread_poll = 300
 test_queue = Queue.Queue()
 test_queue.put("sh603993")
 for_debug = False
@@ -130,7 +130,7 @@ class DataCollection(threading.Thread):
 def getBillDetail(day_index, date_string):
     # 5 levels
     tdc = []
-    level = 4
+    level = 0
     print "================================================== \n"
     print "Start Level %s\n" %(level)
     for i in range(dc_thread_poll):
@@ -147,5 +147,5 @@ def getIndex(day_index):
 
 
 if __name__ == "__main__":
-    #getBillDetail(1, "2017-06-06")
-    getIndex(2)
+    getBillDetail(2, "2017-06-07")
+    #getIndex(2)

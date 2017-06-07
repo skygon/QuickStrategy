@@ -1,6 +1,7 @@
 import json
 import operator
 import threading
+import math
 from Queue import Queue
 from RedisOperator import RedisOperator
 from utils import *
@@ -16,6 +17,7 @@ class MyAI(threading.Thread):
         self.prev_ku = 0
         self.prev_kd = 0 
         self.day_index = day_index
+        # add turnoverratio from index
         self.weight = {}
         self.redis = RedisOperator("localhost", 6379, 0)
         self.start()
@@ -45,8 +47,9 @@ class MyAI(threading.Thread):
         self.prev_ku += real_ku
         self.prev_kd += real_kd
 
+        a = float(data['totalvolpct']) / 0.5
         if real_ku > real_kd * self.k:
-            return level
+            return level * math.pow(a, 2)
 
         return 0
     
@@ -68,4 +71,4 @@ class MyAI(threading.Thread):
 
 
 if __name__ == "__main__":
-    myAI = MyAI(0)
+    myAI = MyAI(1)

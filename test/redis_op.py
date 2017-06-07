@@ -12,31 +12,36 @@ https://pypi.python.org/pypi/redis/2.10.5
 '''
 
 def handleResponseStocksIndex(data):
-    data = data.replace('symbol', '"symbol"')
-    data = data.replace('code', '"code"')
-    data = data.replace('name', '"name"')
-    data = data.replace('trade', '"trade"')
-    data = data.replace('pricechange', '"pricechange"')
+    data = data.replace('\'symbol\'', '"symbol"')
+    data = data.replace('\'code\'', '"code"')
+    data = data.replace('\'name\'', '"name"')
+    data = data.replace('\'trade\'', '"trade"')
+    data = data.replace('\'pricechange\'', '"pricechange"')
     #side affect
-    data = data.replace('per', '"per"')
-    data = data.replace('change"per"cent', '"changepercent"')
-    data = data.replace('buy', '"buy"')
-    data = data.replace('sell', '"sell"')
-    data = data.replace('settlement', '"settlement"')
-    data = data.replace('open', '"open"')
-    data = data.replace('high', '"high"')
-    data = data.replace('low', '"low"')
-    data = data.replace('volume', '"volume"')
-    data = data.replace('amount', '"amount"')
-    data = data.replace('ticktime', '"ticktime"')
-    data = data.replace('pb', '"pb"')
-    data = data.replace('mktcap', '"mktcap"')
-    data = data.replace('nmc', '"nmc"')
-    data = data.replace('turnoverratio', '"turnoverratio"')
+    data = data.replace('\'per\'', '"per"')
+    data = data.replace('\'changepercent\'', '"changepercent"')
+    data = data.replace('\'buy\'', '"buy"')
+    data = data.replace('\'sell\'', '"sell"')
+    data = data.replace('\'settlement\'', '"settlement"')
+    data = data.replace('\'open\'', '"open"')
+    data = data.replace('\'high\'', '"high"')
+    data = data.replace('\'low\'', '"low"')
+    data = data.replace('\'volume\'', '"volume"')
+    data = data.replace('\'amount\'', '"amount"')
+    data = data.replace('\'ticktime\'', '"ticktime"')
+    data = data.replace('\'pb\'', '"pb"')
+    data = data.replace('\'mktcap\'', '"mktcap"')
+    data = data.replace('\'nmc\'', '"nmc"')
+    data = data.replace('\'turnoverratio\'', '"turnoverratio"')
     return data
 
 r = RedisOperator("localhost", 6379, 0)
 
-data = r.lindex('index_2', 3)
+data = r.lindex('index_1', 3)
 print data
+data = data.replace(', u\'', ', \'')
+data = data.replace('{u', '{')
+data = handleResponseStocksIndex(data)
+print data
+print json.loads(data)
 
