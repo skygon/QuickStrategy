@@ -7,11 +7,11 @@ from RedisOperator import RedisOperator
 r = RedisOperator("localhost", 6379, 0)
 
 def changeIndexToDict():
-    l = r.llen('index_2')
+    l = r.llen('index_3')
     for i in range(l):
-        s = r.lindex('index_2', i)
+        s = r.lindex('index_3', i)
         data = json.loads(s)
-        r.hset('index_2_dict', data['symbol'], s)
+        r.hset('index_3_dict', data['symbol'], s)
 
 
 def prepareInfo():
@@ -47,5 +47,5 @@ def getTotalVolume():
 
 
 if __name__ == '__main__':
-    #changeIndexToDict()
-    getTotalVolume()
+    changeIndexToDict()
+    #getTotalVolume()
