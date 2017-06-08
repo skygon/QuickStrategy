@@ -1,11 +1,51 @@
 # -*- coding: utf8 -*-
 import os
+import json
 from utils import *
+from RedisOperator import RedisOperator
 
-def funcA(**kwargs):
-    for k,v in kwargs.items():
-        print type(k),type(v)
+r = RedisOperator("localhost", 6379, 0)
+
+def changeIndexToDict():
+    l = r.llen('index_2')
+    for i in range(l):
+        s = r.lindex('index_2', i)
+        data = json.loads(s)
+        r.hset('index_2_dict', data['symbol'], s)
+
+
+def prepareInfo():
+    symbol = {}
+    hkeys = r.hkeys('index_2_dict')
+    print type(hkeys)
+    for k in hkeys:
+        symbol[k] = {}
+        s = r.hget('index_2_dict', k)
+        data = json.loads(s)
+        symbol[k]['changepercent'] = data['changepercent']
+        symbol[k]['turnoverratio'] = data['turnoverratio']
+        symbol[k]['volume'] = data['volume']
+        
+
+def getTotalVolume():
+    f = open('volume_info', 'w')
+    hkeys = r.hkeys('index_2_dict')
+    #print type(hkeys)
+    for k in hkeys:
+        s = r.hget('index_2_dict', k)
+        data = json.loads(s)
+        f.write(k)
+        f.write(',')
+        if data['turnoverratio'] == 0:
+            f.write("0")
+        else:
+            total = int(data['volume'] / data['turnoverratio']) * 100
+            f.write(str(total))
+        f.write('\n')
+    
+    f.close()
 
 
 if __name__ == '__main__':
-    funcA(price=4, name="sh000001")
+    #changeIndexToDict()
+    getTotalVolume()

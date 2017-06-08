@@ -18,6 +18,9 @@ class RedisOperator(object):
         return self.con.rpush(index_list, s)
     
     #==== redis command wrapper=======================#
+    def hkeys(self, table):
+        return self.con.hkeys(table)
+    
     def hset(self, table, field, value):
         return self.con.hset(table, field, value)
     
@@ -26,6 +29,9 @@ class RedisOperator(object):
     
     def hlen(self, table):
         return self.con.hlen(table)
+    
+    def llen(self, index_list):
+        return self.con.llen(index_list)
 
     def lindex(self, index_list, index):
         return self.con.lindex(index_list, index)
