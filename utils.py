@@ -163,9 +163,11 @@ getCodeQueueByType()
 if __name__ == '__main__':
     #print code_queue
     getCodeQueueByType()
+    print "========sh=================="
     print len(code_vol_map['sh']['small'].keys())
     print len(code_vol_map['sh']['mid'].keys())
     print len(code_vol_map['sh']['big'].keys())
+    print "=========sz================="
     print len(code_vol_map['sz']['small'].keys())
     print len(code_vol_map['sz']['mid'].keys())
     print len(code_vol_map['sz']['big'].keys())
