@@ -160,6 +160,13 @@ def getCodeQueueByType():
 getCodeQueueByType()
 
 
+def changeIndexToDict():
+    l = r.llen('index_4')
+    for i in range(l):
+        s = r.lindex('index_4', i)
+        data = json.loads(s)
+        r.hset('index_4_dict', data['symbol'], s)
+
 if __name__ == '__main__':
     #print code_queue
     getCodeQueueByType()
