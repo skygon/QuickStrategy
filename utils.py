@@ -1,6 +1,12 @@
 import os
 import Queue
 import datetime
+
+'''
+Index 0 stand for "2017-06-05"
+We will add a function to get a mapping between index and the date string
+'''
+
 #===================================Global variables=========================
 BUY_STR = '\xc2\xf2\xc5\xcc'
 SELL_STR = '\xc2\xf4\xc5\xcc'
@@ -34,8 +40,22 @@ special_days.append(datetime.datetime.strptime('2017-05-29', '%Y-%m-%d'))
 special_days.append(datetime.datetime.strptime('2017-05-30', '%Y-%m-%d'))
 #TODO add more in 2017
 
-
+# global queues
 code_queue = Queue.Queue()
+code_vol_map = {}
+
+code_vol_map['sh'] = {}
+code_vol_map['sh']['small'] = {}
+code_vol_map['sh']['mid'] = {}
+code_vol_map['sh']['big'] = {}
+
+code_vol_map['sz'] = {}
+code_vol_map['sz']['small'] = {}
+code_vol_map['sz']['mid'] = {}
+code_vol_map['sz']['big'] = {}
+
+
+
 #===============================Big deal related=============================
 DEAL_LEVEL = 5
 BIG_DEAL = {}
@@ -84,7 +104,7 @@ with open(code_volumn_file) as f:
         code_volumn[s[0]] = s[1]
         line = f.readline()
 
-#==========================Helper functions========================================================
+#==========================read all code into queue========================================================
 def read_to_queue(prefix, filename, dest_queue):
     f = open(filename)
     line = f.readline()
@@ -101,5 +121,51 @@ read_to_queue('sh', SHA, code_queue)
 read_to_queue('sz', SZA, code_queue)
 
 
+
+#=====================Get SH small code into queue================================================
+volume_info = os.path.join(os.getcwd(), "config", "volume_info")
+big_vol = 5 * 10000 * 10000
+small_vol = 1 * 10000 * 10000
+
+def handleVolume(prefix, code, volume):
+    if volume < small_vol:
+        code_vol_map[prefix]['small'][code] = volume
+    elif volume < big_vol:
+        code_vol_map[prefix]['mid'][code] = volume
+    else:
+        code_vol_map[prefix]['big'][code] = volume
+
+def getCodeQueueByType():
+    f = open(volume_info)
+    line = f.readline()
+    while line:
+        code, volume = line.strip('\n').split(',')
+        volume = int(volume)
+        line = f.readline()
+        if volume == 0:
+            continue
+        
+        # currently, we only interested at sh6xxx and sz000xxx. Not consider sz002xxx and sz300xxx
+        if code.find("sh6") >= 0:
+            prefix = "sh"
+        elif code.find("sz000") >= 0:
+            prefix = "sz"
+        else:
+            continue
+        
+        handleVolume(prefix, code, volume)
+        
+    f.close()
+
+getCodeQueueByType()
+
+
 if __name__ == '__main__':
-    print code_queue
+    #print code_queue
+    getCodeQueueByType()
+    print len(code_vol_map['sh']['small'].keys())
+    print len(code_vol_map['sh']['mid'].keys())
+    print len(code_vol_map['sh']['big'].keys())
+    print len(code_vol_map['sz']['small'].keys())
+    print len(code_vol_map['sz']['mid'].keys())
+    print len(code_vol_map['sz']['big'].keys())
