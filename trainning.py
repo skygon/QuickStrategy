@@ -1,4 +1,5 @@
 import json
+import operator
 from utils import *
 from RedisOperator import RedisOperator
 
@@ -14,4 +15,5 @@ for k in code_vol_map['sh']['small'].keys():
     data = json.loads(s)
     sh_small[k] = float(data['changepercent'])
 
-ranked =  sorted(self.sh_small.items(), key=operator.itemgetter(1), reverse=True)
+ranked =  sorted(sh_small.items(), key=operator.itemgetter(1), reverse=True)
+print ranked
