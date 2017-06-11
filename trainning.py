@@ -1,6 +1,7 @@
 import json
 import operator
 from utils import *
+from plot import *
 from RedisOperator import RedisOperator
 
 
@@ -19,8 +20,15 @@ class Trainning(object):
                 continue
             data = json.loads(s)
             self.sh_small[k] = float(data['changepercent'])
-
-            #ranked =  sorted(sh_small.items(), key=operator.itemgetter(1), reverse=True)
+            self.ranked =  sorted(self.sh_small.items(), key=operator.itemgetter(1), reverse=True)
             #print ranked
 
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    t = Trainning()
+    t.getTrainningCode()
+
+    plotChangeIndexToKeyIndex(t.sh_small, 'r-*')
+    
     

@@ -5,6 +5,7 @@ import math
 from Queue import Queue
 from RedisOperator import RedisOperator
 from utils import *
+from plot import *
 
 # weight
 # For each level, if kuvolume >= k * kdvolume, weight add level+1. How to set value of k is a key point
@@ -22,25 +23,7 @@ class MyAI(threading.Thread):
         self.weight = {}
         self.symbol = {}
         self.redis = RedisOperator("localhost", 6379, 0)
-        # day index used to predict stocks trending
-        self.index_dict = "index_" + str(self.day_index + 1) + "_dict"
-        self.start()
 
-    def prepareInfo(self):
-        hkeys = self.redis.hkeys(self.index_dict)
-        #print type(hkeys)
-        for k in hkeys:
-            self.symbol[k] = {}
-            s = self.redis.hget(self.index_dict, k)
-            data = json.loads(s)
-            self.symbol[k]['changepercent'] = float(data['changepercent'])
-            self.symbol[k]['turnoverratio'] = float(data['turnoverratio'])
-            self.symbol[k]['volume'] = int(data['volume'])
-        #print self.symbol["sh600074"]
-
-    # real time turnoverratio should be get from summary['stockvol']
-    def RealTimePrepareInfo(self):
-        pass
 
     def processOneCode(self):
         try:
@@ -71,35 +54,29 @@ class MyAI(threading.Thread):
             self.prev_ku += real_ku
             self.prev_kd += real_kd
 
-            # a is used to find how big is the big bill
-            a = float(data['totalvolpct']) / 0.5 
-            if self.symbol[self.code]['turnoverratio'] > 30:
-                return 0 # currently, don't take care of turn over ratio bigger than 15%
             if real_ku > real_kd * self.k:
-                return level * math.pow(a, 2) * self.symbol[self.code]['turnoverratio']/self.turnoverratio
+                return level
 
             return 0
         except Exception, e:
             print "judgeData error: %s \n" %(str(e))
             return 0
-    
-    def run(self):
-        self.prepareInfo()
-        while True:
-            try:
-                self.code = code_queue.get(False)
-                self.processOneCode()
-            except Queue.Empty:
-                print "All works done \n"
-                break
-            except Exception, e:
-                print "Ohh, MyAI has some problem... %s\n" %(str(e))
-        
-        # result 
-        result = self.sortWeight()
-        for i in range(50):
-            print result[i]
 
+    
+    def predictSmallSH(self):
+        for k in code_vol_map['sh']['small'].keys():
+            self.code = k
+            self.processOneCode()
 
 if __name__ == "__main__":
-    myAI = MyAI(1)
+    myAI = MyAI(3)
+    myAI.predictSmallSH()
+    print len(myAI.weight.keys())
+    plotChangeIndexToKeyIndex(myAI.weight, 'b-*')
+    from trainning import Trainning
+    t = Trainning()
+    t.getTrainningCode()
+
+    plotChangeIndexToKeyIndex(t.sh_small, 'r-*')
+    plt.show()
+
