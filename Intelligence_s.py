@@ -72,11 +72,11 @@ if __name__ == "__main__":
     myAI = MyAI(3)
     myAI.predictSmallSH()
     print len(myAI.weight.keys())
-    plotChangeIndexToKeyIndex(myAI.weight, 'b-*')
+    plotChangeIndexToKeyIndex(myAI.weight, 'bo')
     from trainning import Trainning
     t = Trainning()
     t.getTrainningCode()
 
-    plotChangeIndexToKeyIndex(t.sh_small, 'r-*')
+    plotChangeIndexToKeyIndex(t.sh_small, 'r*')
     plt.show()
 

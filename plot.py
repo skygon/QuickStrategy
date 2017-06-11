@@ -24,3 +24,11 @@ def plotChangeIndexToKeyIndex(code_change_map, line_set_string):
     
     plt.plot(x, y, line_set_string)
     #plt.show()
+
+
+if __name__ == "__main__":
+    x = [0,1,2,3]
+    y = [15,10,16,8]
+
+    plt.scatter(x,y)
+    plt.show()
