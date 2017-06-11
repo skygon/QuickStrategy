@@ -94,7 +94,7 @@ if __name__ == "__main__":
     myAI.predictSmallSH()
 
     from trainning import Trainning
-    t = Trainning()
+    t = Trainning(4)
     t.getTrainningCode()
 
     myAI.calPredictPrecision(t.ranked, 100)

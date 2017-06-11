@@ -6,16 +6,17 @@ from RedisOperator import RedisOperator
 
 
 class Trainning(object):
-    def __init__(self):
+    def __init__(self, day_index):
+        self.day_index = day_index
         # get redis connection
         self.redis= RedisOperator('localhost',6379,0)
         # sh small rank
         self.sh_small = {} # code <-> changepercent
-        self.getTrainningCode()
+        self.index_dict = "index_" + str(self.day_index) + "_dict"
     
     def getTrainningCode(self):
         for k in code_vol_map['sh']['small'].keys():
-            s = self.redis.hget('index_4_dict', k)
+            s = self.redis.hget(self.index_dict, k)
             if s is None:
                 continue
             data = json.loads(s)
