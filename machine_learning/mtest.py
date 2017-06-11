@@ -1,5 +1,5 @@
 #coding=utf-8
-
+import os
 from sklearn.linear_model import LinearRegression
 #from sklearn.cross_validation import train_test_split  #这里是引用了交叉验证
 import matplotlib.pyplot as plt 
@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-data = pd.read_csv('data.csv')
+fn = os.path.join(os.getcwd(), 'machine_learning', 'data.csv')
+data = pd.read_csv(fn)
 print data.head()
 print data.shape
 
@@ -97,7 +98,7 @@ print linreg.coef_ # [ 0.04656457  0.17915812  0.00345046]
 r = zip(feature_cols, linreg.coef_)
 print r
 # output:
-# [('TV', 0.04656456787415026), ('Radio', 0.17915812245088847), ('Newspaper', 0.0034504647111804625)]
+# [('TV', 0.04656456787415026), ('Radio', 0.17915812245088847), ('Newspaper', -0.0034504647111804625)]
 # that is : y = 2.877+0.0466∗TV+0.179∗Radio-0.00345∗Newspaper
 
 # test， 预测
