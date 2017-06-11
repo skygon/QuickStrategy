@@ -114,7 +114,7 @@ class MyAI(threading.Thread):
                 pf += 1
             count += 1
         
-
+        print pt, pf
         print "predict precision is %s" %(pt/float(pt+pf))
 
 
@@ -127,6 +127,6 @@ if __name__ == "__main__":
     t = Trainning(4,volume_type)
     t.getTrainningCode()
 
-    myAI.calPredictPrecision(t.ranked, 20)
+    myAI.calPredictPrecision(t.ranked, 50)
 
 
