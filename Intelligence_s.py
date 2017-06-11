@@ -67,16 +67,36 @@ class MyAI(threading.Thread):
         for k in code_vol_map['sh']['small'].keys():
             self.code = k
             self.processOneCode()
+        self.predict = self.sortWeight()
+
+    def calPredictPrecision(self, real_rank, length):
+        pt = 0
+        pf = 0
+        count = 0
+        real_codes = [k[0] for k in real_rank][:length]
+        predict_codes = [k[0] for k in self.predict][:length]
+        
+        for c in predict_codes:
+            if count > length:
+                break
+            if c in real_codes:
+                pt += 1
+            else:
+                pf += 1
+            count += 1
+        
+
+        print "predict precision is %s" %(pt/float(pt+pf))
+
 
 if __name__ == "__main__":
     myAI = MyAI(3)
     myAI.predictSmallSH()
-    print len(myAI.weight.keys())
-    plotChangeIndexToKeyIndex(myAI.weight, 'bo')
+
     from trainning import Trainning
     t = Trainning()
     t.getTrainningCode()
 
-    plotChangeIndexToKeyIndex(t.sh_small, 'r*')
-    plt.show()
+    myAI.calPredictPrecision(t.ranked, 100)
+
 
