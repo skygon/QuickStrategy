@@ -36,6 +36,9 @@ class RedisOperator(object):
     def lindex(self, index_list, index):
         return self.con.lindex(index_list, index)
     
+    def rpush(self, index_list, index):
+        return self.con.rpush(index_list, index)
+    
 
 if __name__ == "__main__":
     r = RedisOperator("localhost", 6379, 0)
