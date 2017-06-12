@@ -36,7 +36,18 @@ class LinearPredict(object):
         
         self.redis = RedisOperator('localhost', 6379, 0)
 
-    def 
+    def regression(self):
+        self.linreg = LinearRegression()
+        self.model = self.linreg.fit(self.x, self.y)
+        print self.model # LinearRegression(copy_X=True, fit_intercept=True, n_jobs=1, normalize=False)
+        print self.linreg.intercept_ # 2.87696662232
+        #print self.linreg.coef_ # [ 0.04656457  0.17915812  0.00345046]
+        r = zip(self.x_keys, self.linreg.coef_[0])
+        print r
+    
+    def testPrecision(self):
+        pass
+    
     def generateTrainningData(self):
         for k in code_vol_map['sh']['small'].keys():
             s = self.redis.hget(self.summary_table, k)
@@ -90,6 +101,7 @@ class LinearPredict(object):
 if __name__ == "__main__":
     lp = LinearPredict(2)
     lp.generateTrainningData()
+    lp.regression()
 
             
 
