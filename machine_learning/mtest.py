@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 import numpy as np 
 import pandas as pd
-import seaborn as sns
+#import seaborn as sns
 
 fn = os.path.join(os.getcwd(), 'machine_learning', 'data.csv')
 data = pd.read_csv(fn)
@@ -16,11 +16,11 @@ print data.shape
  
 # visualize the relationship between the features and the response using scatterplots
 # seaborn的pairplot函数绘制X的每一维度和对应Y的散点图。通过设置size和aspect参数来调节显示的大小和比例。
-sns.pairplot(data, x_vars=['TV','Radio','Newspaper'], y_vars='Sales', size=7, aspect=0.8)
+#sns.pairplot(data, x_vars=['TV','Radio','Newspaper'], y_vars='Sales', size=7, aspect=0.8)
 #plt.show()
 
 # 通过加入一个参数kind='reg'，seaborn可以添加一条最佳拟合直线和95%的置信带。
-sns.pairplot(data, x_vars=['TV','Radio','Newspaper'], y_vars='Sales', size=7, aspect=0.8, kind='reg')
+#sns.pairplot(data, x_vars=['TV','Radio','Newspaper'], y_vars='Sales', size=7, aspect=0.8, kind='reg')
 #plt.show()
 
 # 多元线性回归模型

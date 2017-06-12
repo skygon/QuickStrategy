@@ -18,5 +18,14 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 import numpy as np 
 import pandas as pd
-import seaborn as sns
+#import seaborn as sns
+
+class LinearPredict(object):
+    def __init__(self, day_index):
+        self.day_index = day_index
+        self.factors = ['ku'] #factors are all from summary table
+        self.redis = RedisOperator('localhost', 6379, 0)
+
+    def generateTrainningData(self)
+
 
