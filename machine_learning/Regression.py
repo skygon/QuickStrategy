@@ -67,6 +67,19 @@ class Prediction(object):
         print "RMSE: %s" %(sum_erro)
         
 
+        pos = 0
+        neg = 0
+
+        for i in range(len(predict_y)):
+            if float(predict_y[i]) > 0 and float(real_y.values[i][0]) < 0:
+                neg += 1
+            else:
+                pos += 1
+            
+            
+        
+        print "Predict precison is %s" %(pos / float(pos+neg))
+
         # plot lines
         plt.figure()
         plt.grid(True)
@@ -74,6 +87,7 @@ class Prediction(object):
         plt.plot(range(len(real_y)), real_y,'r-*',label="real")
        # plt.plot(range(len(previous_y)), previous_y,'ys',label="previous")
         plt.show()
+        
         
     def logisticRegression_fake(self):
         raw_train_x, raw_train_y = self.generateTrainningData(self.summary_table, self.index_table)
@@ -104,6 +118,7 @@ class Prediction(object):
     
     def sigmod(self, raw):
         r = []
+        x = []
         for i in range(len(raw)):
             #print raw.values[i][0]
             f = 1 / (1 + np.e ** (-raw.values[i][0]))
@@ -138,13 +153,6 @@ class Prediction(object):
         
         print "Predict precision is %s " %(pos / float(pos+neg))
 
-        '''plt.figure()
-        plt.grid(True)
-        plt.plot(range(len(predict_y)), predict_y,'bo',label="predict")
-        plt.plot(range(len(real_y)), real_y,'r*',label="real")
-       # plt.plot(range(len(previous_y)), previous_y,'ys',label="previous")
-        plt.show()'''
-
 
 
     def generateTrainningData(self, summary_table, index_table):
@@ -164,8 +172,8 @@ class Prediction(object):
             
             data = json.loads(rs)
             cp = float(data['changepercent'])
-            #score = self.transChange2Score(cp)
-            score = cp
+            score = self.transChange2Score(cp)
+            #score = cp
             e['score'] = score
             data_source.append(e)
             # trans cp to score
@@ -198,18 +206,20 @@ class Prediction(object):
             score = 5.0
         elif cp >= 1.0:
             score = 2.0
-        else:
+        elif cp > 0:
             score = 0
+        else:
+            score = int(cp)
         return score
 
     
 
 if __name__ == "__main__":
-    lp = Prediction(2, 'small')
-    #lp.linearRegression()
-    #lp.testLinearPrecision()
-    lp.logisticRegression()
-    lp.testLogisticRegression()
+    lp = Prediction(3, 'small')
+    lp.linearRegression()
+    lp.testLinearPrecision()
+    #lp.logisticRegression()
+    #lp.testLogisticRegression()
 
             
 
