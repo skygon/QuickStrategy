@@ -12,9 +12,13 @@ from utils import *
 from trainning import Trainning
 from RedisOperator import RedisOperator
 
-# machine learning related libs
+# machine learning algorothms
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model.logistic import  LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+# machine learning related libs
+from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
 #from sklearn.cross_validation import train_test_split  #这里是引用了交叉验证
 import matplotlib.pyplot as plt 
@@ -43,6 +47,27 @@ class Prediction(object):
         self.data_source = [] # structure: kuvolume, kdvolume, totalvolpct, changevolpct, score
         
         self.redis = RedisOperator('localhost', 6379, 0)
+    
+    def LDARegression(self):
+        x, y = self.generateTrainningData(self.summary_table, self.index_table, 'LDA')
+        enc = LabelEncoder()
+        self.label_encoder = enc.fit(y.values.ravel())
+        y = self.label_encoder.transform(y.values.ravel())
+        self.ldaReg = LinearDiscriminantAnalysis()
+        self.ldaReg.fit(x, y)
+    
+    def testLDARegression(self):
+         x, real_y = self.generateTrainningData(self.test_summary_table, self.validate_index_table, 'LDA')
+         real_y = self.label_encoder.transform(real_y.values.ravel())
+
+         predict_y = self.ldaReg.predict(x)
+
+         print predict_y
+         print real_y
+         plt.figure()
+         plt.plot(range(len(predict_y)), predict_y,'b-o')
+         plt.plot(range(len(real_y)), real_y,'r-*')
+         plt.show()
 
     def linearRegression(self):
         x, y = self.generateTrainningData(self.summary_table, self.index_table)
@@ -87,34 +112,6 @@ class Prediction(object):
         plt.plot(range(len(real_y)), real_y,'r-*',label="real")
        # plt.plot(range(len(previous_y)), previous_y,'ys',label="previous")
         plt.show()
-        
-        
-    def logisticRegression_fake(self):
-        raw_train_x, raw_train_y = self.generateTrainningData(self.summary_table, self.index_table)
-        raw_test_x, raw_real_y = self.generateTrainningData(self.test_summary_table, self.validate_index_table)
-
-        self.logisticReg = LogisticRegression()
-
-        '''# TD-IDF 算法获取特征向量
-        vectorizer = TfidfVectorizer()
-        train_x = vectorizer.fit_transform(raw_train_x)
-        test_x = vectorizer.transform(raw_test_x)
-        '''
-        print raw_train_x.shape
-        print raw_train_y.shape
-
-
-        y = []
-        for i in range(len(raw_train_y)/2):
-            y.append(1)
-            y.append(0)
-        #print y
-        #train_y = 1 / (1 + np.e ** (-train_y)) 
-        #print raw_train_y.values
-        #train_y = [1 / (1 + np.e ** (-y)) for y in raw_train_y.values[0]]
-        #print train_y
-        #plt.plot(raw_train_y.values, train_y, 'r')
-        self.logisticReg.fit(raw_train_x, y)
     
     def sigmod(self, raw):
         r = []
@@ -155,7 +152,7 @@ class Prediction(object):
 
 
 
-    def generateTrainningData(self, summary_table, index_table):
+    def generateTrainningData(self, summary_table, index_table, change_type='normal'):
         data_source = []
         for k in code_vol_map['sh'][self.vol_type].keys():
             s = self.redis.hget(summary_table, k)
@@ -172,8 +169,12 @@ class Prediction(object):
             
             data = json.loads(rs)
             cp = float(data['changepercent'])
-            score = self.transChange2Score(cp)
-            #score = cp
+            score = 0
+            if change_type == 'normal':
+                score = self.transChange2Score(cp)
+            elif change_type == 'LDA':
+                score = self.transChange2Catalog(cp)
+            
             e['score'] = score
             data_source.append(e)
             # trans cp to score
@@ -208,19 +209,31 @@ class Prediction(object):
             score = 2.0
         elif cp > 0:
             score = 0
+        elif cp > -2.0:
+            score = -2.0
+        elif cp > -5.0:
+            score = -5.0
         else:
-            score = int(cp)
+            score = -10.0
         return score
 
+    def transChange2Catalog(self, cp):
+        score = 0
+        if cp > 5.0:
+            score = 5
+        elif cp > 0:
+            score = 3
+        else:
+            score = 0
+        return score
     
 
 if __name__ == "__main__":
-    lp = Prediction(3, 'small')
-    lp.linearRegression()
-    lp.testLinearPrecision()
-    #lp.logisticRegression()
-    #lp.testLogisticRegression()
-
+    lp = Prediction(1, 'mid')
+    lp.LDARegression()
+    lp.testLDARegression()
+    #lp.linearRegression()
+    #lp.testLinearPrecision()
             
 
 
