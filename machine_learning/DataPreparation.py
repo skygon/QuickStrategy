@@ -17,8 +17,8 @@ import pandas as pd
 # GBDT (Gradient Boost Decision Tree, 梯度提升决策树) 
 # SVM
 
-class WorkSpace(object):
-     def __init__(self, day_index, vol_type):
+class DataPreparation(object):
+    def __init__(self, day_index, vol_type):
         self.day_index = day_index
         self.vol_type = vol_type # small, mid, big
         self.big_deal_type = 0 # 0 - 4
@@ -67,16 +67,7 @@ class WorkSpace(object):
         df = pd.DataFrame.from_records(data_source)
         x = df[self.x_keys]
         y = df[self.y_keys]
-        '''
-        print "X:"
-        print type(x)
-        print x.shape
-        print x.head()
-        print "Y:"
-        print type(y)
-        print y.shape
-        print y.head()
-        '''
+
         return x,y
     
     def transChange2Score(self, cp):
@@ -110,3 +101,7 @@ class WorkSpace(object):
         else:
             score = 0
         return score
+
+
+if __name__ == "__main__":
+    pass
