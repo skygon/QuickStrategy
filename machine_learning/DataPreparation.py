@@ -36,7 +36,13 @@ class DataPreparation(object):
         
         self.redis = RedisOperator('localhost', 6379, 0)
 
-    def generateTrainningData(self, summary_table, index_table, change_type='normal'):
+    def generateTrainningData(self, change_type='normal'):
+        return self.generateData(self.summary_table, self.index_table, change_type)
+
+    def generateTestData(self, change_type='normal'):
+        return self.generateData(self.test_summary_table, self.validate_index_table, change_type)
+
+    def generateData(self, summary_table, index_table, change_type):
         data_source = []
         for k in code_vol_map['sh'][self.vol_type].keys():
             s = self.redis.hget(summary_table, k)

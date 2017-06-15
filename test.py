@@ -7,11 +7,11 @@ from RedisOperator import RedisOperator
 r = RedisOperator("localhost", 6379, 0)
 
 def changeIndexToDict():
-    l = r.llen('index_6')
+    l = r.llen('index_7')
     for i in range(l):
-        s = r.lindex('index_6', i)
+        s = r.lindex('index_7', i)
         data = json.loads(s)
-        r.hset('index_6_dict', data['symbol'], s)
+        r.hset('index_7_dict', data['symbol'], s)
 
 
 def prepareInfo():
