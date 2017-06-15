@@ -6,12 +6,14 @@ from RedisOperator import RedisOperator
 
 r = RedisOperator("localhost", 6379, 0)
 
-def changeIndexToDict():
-    l = r.llen('index_7')
+def changeIndexToDict(day_index):
+    list_table = "index_" + str(day_index)
+    hash_table = "index_" + str(day_index) + "_dict"
+    l = r.llen(list_table)
     for i in range(l):
-        s = r.lindex('index_7', i)
+        s = r.lindex(list_table, i)
         data = json.loads(s)
-        r.hset('index_7_dict', data['symbol'], s)
+        r.hset(hash_table, data['symbol'], s)
 
 
 def prepareInfo():
@@ -47,5 +49,5 @@ def getTotalVolume():
 
 
 if __name__ == '__main__':
-    changeIndexToDict()
+    changeIndexToDict(8)
     #getTotalVolume()
