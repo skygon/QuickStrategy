@@ -160,12 +160,31 @@ def getCodeQueueByType():
 getCodeQueueByType()
 
 
+#==============================useful functions===============================
 def changeIndexToDict():
     l = r.llen('index_4')
     for i in range(l):
         s = r.lindex('index_4', i)
         data = json.loads(s)
         r.hset('index_4_dict', data['symbol'], s)
+
+def getTotalVolume():
+    f = open('volume_info_update', 'w')
+    hkeys = r.hkeys('index_8_dict')
+    #print type(hkeys)
+    for k in hkeys:
+        s = r.hget('index_8_dict', k)
+        data = json.loads(s)
+        f.write(k)
+        f.write(',')
+        if data['turnoverratio'] == 0:
+            f.write("0")
+        else:
+            total = int(data['volume'] / data['turnoverratio']) * 100
+            f.write(str(total))
+        f.write('\n')
+    
+    f.close()
 
 if __name__ == '__main__':
     #print code_queue

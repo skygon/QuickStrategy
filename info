@@ -2,20 +2,6 @@ pyautogui
 autohotkey
 https://muxuezi.github.io/posts/doc-pyautogui.html
 
-Tables
-1. 大盘所有A股的基本情况表，每天更新
-2. 所有A股的交易明细表，保留N天。表结构为：
-day_id  stock_id  ...
-1        0000001
-1        0000002
-1
-..
-2
-..
-3
-..
-N
-使用mysql 的 update or insert if not found 语法。 可以很方便得扩展N的值。
 
 自动盯盘可以使用stock_info.py 
 
@@ -25,6 +11,15 @@ http://www.cnblogs.com/huxi/archive/2010/12/05/1897271.html
 
 Run redis on windows:
 https://github.com/MSOpenTech/redis/releases
+
+关键特征 (必须是通过summary table就能直接获取或者推导出来的)：
+1. ku / kd
+2. bigdealvolpct
+3. turnoverratio : stockvol/code_map
+4. 量比 ： 当前日期的stockvol / 过去5个交易日的平均stockvol
+
+RSI： 及其适用于短线投资
+KDJ： 连续6天以上的分析预测
 
 
 

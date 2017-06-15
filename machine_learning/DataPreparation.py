@@ -29,9 +29,10 @@ class DataPreparation(object):
         self.test_summary_table = "summary_" + str(self.day_index+1) + "_amount_" + str(self.big_deal_type)
         self.validate_index_table = "index_" + str(self.day_index+2) + "_dict"
 
-        self.x_keys = ['kuvolume', 'kdvolume', 'totalvolpct', 'changevolpct']
+        #self.x_keys = ['kuvolume', 'kdvolume', 'totalvolpct', 'changevolpct']
+        self.x_keys = ['kukd', 'bigdealvolpct', 'turnoverratio']
         self.y_keys = ['score']
-        self.keys = ['kuvolume', 'kdvolume', 'totalvolpct'] #changevolpct is derived from both table
+        #self.keys = ['kuvolume', 'kdvolume', 'totalvolpct'] #changevolpct is derived from both table
         self.data_source = [] # structure: kuvolume, kdvolume, totalvolpct, changevolpct, score
         
         self.redis = RedisOperator('localhost', 6379, 0)
@@ -62,7 +63,7 @@ class DataPreparation(object):
             score = 0
             if change_type == 'normal':
                 score = self.transChange2Score(cp)
-            elif change_type == 'LDA':
+            elif change_type == 'class':
                 score = self.transChange2Catalog(cp)
             
             e['score'] = score

@@ -30,11 +30,11 @@ def prepareInfo():
         
 
 def getTotalVolume():
-    f = open('volume_info', 'w')
-    hkeys = r.hkeys('index_2_dict')
+    f = open('volume_info_update', 'w')
+    hkeys = r.hkeys('index_8_dict')
     #print type(hkeys)
     for k in hkeys:
-        s = r.hget('index_2_dict', k)
+        s = r.hget('index_8_dict', k)
         data = json.loads(s)
         f.write(k)
         f.write(',')
@@ -49,5 +49,5 @@ def getTotalVolume():
 
 
 if __name__ == '__main__':
-    changeIndexToDict(8)
-    #getTotalVolume()
+    #changeIndexToDict(8)
+    getTotalVolume()

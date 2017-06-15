@@ -30,13 +30,13 @@ class MySVM(object):
     def setKernel(self, kernel_type):
         self.kernel_type = kernel_type
     
-    def getTrainningData(self):
-        x, y = self.dp.generateTrainningData()
+    def getTrainningData(self, change_type='normal'):
+        x, y = self.dp.generateTrainningData(change_type)
         print x.shape, y.shape
         return x, y
     
-    def getTestData(self):
-        x, y = self.dp.generateTestData()
+    def getTestData(self, change_type='normal'):
+        x, y = self.dp.generateTestData(change_type)
         return x, y
     
     def getEstimator(self):
@@ -58,29 +58,15 @@ class MySVM(object):
 
 
     def predict(self):
-        x, real_y = self.getTestData()
+        #x, real_y = self.getTestData()
+        x, real_y = self.getTrainningData()
         estimator = self.getEstimator()
         print estimator
         pred_y = estimator.predict(x)
-        print "=========pred y============"
-        print pred_y
-    
-    def test(self):
-        x, y = self.getTrainningData()
 
-        parameters = {'kernel':('poly', 'rbf'), 'C':[1e3, 1e2, 1, 10]}
-        svr = svm.SVR()
-        clf = GridSearchCV(svr, parameters)
-        y_rbf = clf.fit(x, y.values.ravel()).predict(x)
-
-        print "==== best estimator ======"
-        print clf
-        print "==== checked cv results ===="
-        print clf.cv_results_
-
-        plt.scatter(range(len(y)), y, c='k', label='data')
-        plt.hold('on')
-        plt.plot(range(len(y)), y_rbf, c='g', label='RBF model')
+        plt.figure()
+        plt.plot(range(len(real_y)), real_y, 'k-*', label='data')
+        plt.plot(range(len(real_y)), pred_y, 'g-o', label='RBF model')
         #plt.plot(X, y_lin, c='r', label='Linear model')
         #plt.plot(X, y_poly, c='b', label='Polynomial model')
         plt.xlabel('data')
@@ -89,12 +75,45 @@ class MySVM(object):
         plt.legend()
         plt.show()
         
+    
+    def test(self):
+        x, y = self.getTrainningData('class')
+
+        #parameters = {'kernel':('poly', 'rbf'), 'C':[1e3, 1e2, 1, 10]}
+        #svr = svm.SVR()
+        #clf = GridSearchCV(svr, parameters)
+        clf = svm.SVC()
+        clf.fit(x, y.values.ravel())
+
+        #y_rbf = clf.fit(x, y.values.ravel()).predict(x)
+        x, y = self.getTestData('class')
+        y_rbf = clf.predict(x)
+
+        print "==== best estimator ======"
+        print clf
+        #print "==== checked cv results ===="
+        #print clf.cv_results_
+
+        #plt.scatter(range(len(y)), y, 'k', label='data')
+        plt.figure()
+        plt.plot(range(len(y)), y, 'r-v', label='data')
+        plt.plot(range(len(y)), y_rbf, 'g-o', label='estimate')
+        #plt.plot(X, y_lin, c='r', label='Linear model')
+        #plt.plot(X, y_poly, c='b', label='Polynomial model')
+        plt.xlabel('data')
+        plt.ylabel('target')
+        plt.title('Support Vector Regression')
+        plt.legend()
+        plt.show()
+    
+
+        
 
     
 
 if __name__ == "__main__":
-    mysvm = MySVM(2, 'small')
-    mysvm.setKernel('poly')
+    mysvm = MySVM(6, 'small')
+    mysvm.setKernel('rbf')
     #mysvm.fit()
     #mysvm.predict()
     mysvm.test()
