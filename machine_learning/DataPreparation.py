@@ -58,11 +58,11 @@ class DataPreparation(object):
             if ku == 0 and kd ==0:
                 kukd = 0
             elif ku == 0:
-                kukd = 0.01
+                kukd = 0.1
             elif kd == 0:
-                kukd = 5
+                kukd = 10
             else:
-                kukd = float(ku) / float(kd)
+                kukd = float(ku) / float(kd) * 5
             
             e['kukd'] = kukd
             e['bigdealvolpct'] = float(data['totalvolpct']) * 100

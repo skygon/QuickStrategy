@@ -48,35 +48,23 @@ class MySVM(object):
             return self.svr_poly
         else:
             raise Exception("Unsuppoerted kernel type")
-
-    def fit(self):
-        x, y = self.getTrainningData()
-        estimator = self.getEstimator()
-        #self.svr_poly.fit(x, y.values.ravel())
-        estimator.fit(x, y.values.ravel())
-        print estimator
-
-
-    def predict(self):
-        x, real_y = self.getTestData()
-        #x, real_y = self.getTrainningData()
-        estimator = self.getEstimator()
-        print estimator
-        pred_y = estimator.predict(x)
-
+    
+    def calcTopPrecision(self, real_y, pred_y, size):
+        pass
+    def calcAllPrecision(self, real_y, pred_y):
         pos = 0
         neg = 0
         for i in range(len(real_y)):
             if pred_y[i] > 0 and real_y.values[i][0] < 0:
                 neg += 1
+            elif pred_y[i] < 0 and real_y.values[i][0] >= 2:
+                neg += 1
             else:
-                print pred_y[i], real_y.values[i][0]
                 pos += 1
             
         print "Estimator precision is %s " %(float(pos) / float(pos + neg))
-                
-
-        '''
+    
+    def plotData(self, real_y, pred_y):
         plt.figure()
         plt.plot(range(len(real_y)), real_y, 'k-*', label='data')
         plt.plot(range(len(real_y)), pred_y, 'g-o', label='RBF model')
@@ -87,38 +75,56 @@ class MySVM(object):
         plt.title('Support Vector Regression')
         plt.legend()
         plt.show()
-        '''
+    
+    def fit(self):
+        x, y = self.getTrainningData()
+        #estimator = self.getEstimator()
+        #self.svr_poly.fit(x, y.values.ravel())
+        #estimator.fit(x, y.values.ravel())
+        parameters = {'kernel':('rbf',), 'C':[1e3, 1e2, 1, 10]}
+        svr = svm.SVR()
+        self.estimator = GridSearchCV(svr, parameters)
+        self.estimator.fit(x, y.values.ravel())
+
+        print self.estimator
+
+
+    def predict(self):
+        x, real_y = self.getTestData()
+        #estimator = self.getEstimator()
+        #print estimator
+        pred_y = self.estimator.predict(x)
+
+        self.calcAllPrecision(real_y, pred_y)
+
+        self.plotData(real_y, pred_y)
         
     
     def test(self):
-        x, y = self.getTrainningData('class')
+        x, y = self.getTrainningData()
 
-        #parameters = {'kernel':('poly', 'rbf'), 'C':[1e3, 1e2, 1, 10]}
-        #svr = svm.SVR()
-        #clf = GridSearchCV(svr, parameters)
-        clf = svm.SVC()
+        parameters = {'kernel':('rbf',), 'C':[1e3, 1e2, 1, 10]}
+        svr = svm.SVR()
+        clf = GridSearchCV(svr, parameters)
+        #clf = svm.SVR()
         clf.fit(x, y.values.ravel())
 
         #y_rbf = clf.fit(x, y.values.ravel()).predict(x)
-        x, y = self.getTestData('class')
-        y_rbf = clf.predict(x)
+        test_x, real_y = self.getTestData()
+        pred_y = clf.predict(test_x)
 
         print "==== best estimator ======"
         print clf
         #print "==== checked cv results ===="
         #print clf.cv_results_
+        self.calcAllPrecision(real_y, pred_y)
 
-        #plt.scatter(range(len(y)), y, 'k', label='data')
-        plt.figure()
-        plt.plot(range(len(y)), y, 'r-v', label='data')
-        plt.plot(range(len(y)), y_rbf, 'g-o', label='estimate')
-        #plt.plot(X, y_lin, c='r', label='Linear model')
-        #plt.plot(X, y_poly, c='b', label='Polynomial model')
-        plt.xlabel('data')
-        plt.ylabel('target')
-        plt.title('Support Vector Regression')
-        plt.legend()
-        plt.show()
+        print type(pred_y)
+        print type(real_y.values)
+        #print np.sort(pred_y)
+        print np.sort(real_y.values, axis=None)
+        
+                
     
 
         
@@ -126,7 +132,7 @@ class MySVM(object):
     
 
 if __name__ == "__main__":
-    mysvm = MySVM(6, 'small')
+    mysvm = MySVM(1, 'small')
     mysvm.setKernel('rbf')
     mysvm.fit()
     mysvm.predict()
