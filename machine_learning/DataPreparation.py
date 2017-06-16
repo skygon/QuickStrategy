@@ -29,12 +29,10 @@ class DataPreparation(object):
         self.test_summary_table = "summary_" + str(self.day_index+1) + "_amount_" + str(self.big_deal_type)
         self.validate_index_table = "index_" + str(self.day_index+2) + "_dict"
 
-        #self.x_keys = ['kuvolume', 'kdvolume', 'totalvolpct', 'changevolpct']
-        self.x_keys = ['kukd', 'bigdealvolpct', 'turnoverratio']
+        self.x_keys = ['kukd', 'bigdealvolpct', 'turnoverratio'] # TODO add more futures, like RSI, MACD, KDJ ...
         self.y_keys = ['score']
-        #self.keys = ['kuvolume', 'kdvolume', 'totalvolpct'] #changevolpct is derived from both table
-        self.data_source = [] # structure: kuvolume, kdvolume, totalvolpct, changevolpct, score
-        
+        self.data_source = [] 
+
         self.redis = RedisOperator('localhost', 6379, 0)
 
     def generateTrainningData(self, change_type='normal'):
@@ -50,16 +48,31 @@ class DataPreparation(object):
             rs = self.redis.hget(index_table, k)
             if s is None or rs is None:
                 continue
+            
+            # futures from big deal summary
             data = json.loads(s)
             e = {}
-            for t in self.keys:
-                e[t] = data[t]
+            ku = int(data['kuvolume'])
+            kd = int(data['kdvolume'])
+
+            if ku == 0 and kd ==0:
+                kukd = 0
+            elif ku == 0:
+                kukd = 0.01
+            elif kd == 0:
+                kukd = 5
+            else:
+                kukd = float(ku) / float(kd)
+            
+            e['kukd'] = kukd
+            e['bigdealvolpct'] = float(data['totalvolpct']) * 100
             # cal change vol percent
             stockvol = float(data['stockvol'])
-            e['changevolpct'] = stockvol / code_vol_map['sh'][self.vol_type][k] * 100
+            e['turnoverratio'] = stockvol / code_vol_map['sh'][self.vol_type][k] * 100
             
-            data = json.loads(rs)
-            cp = float(data['changepercent'])
+            # target from index
+            index_data = json.loads(rs)
+            cp = float(index_data['changepercent'])
             score = 0
             if change_type == 'normal':
                 score = self.transChange2Score(cp)
@@ -111,4 +124,6 @@ class DataPreparation(object):
 
 
 if __name__ == "__main__":
-    pass
+    dp = DataPreparation(7, 'small')
+    x, y = dp.generateTrainningData()
+    print x.head(20)

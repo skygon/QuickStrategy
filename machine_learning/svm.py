@@ -58,12 +58,25 @@ class MySVM(object):
 
 
     def predict(self):
-        #x, real_y = self.getTestData()
-        x, real_y = self.getTrainningData()
+        x, real_y = self.getTestData()
+        #x, real_y = self.getTrainningData()
         estimator = self.getEstimator()
         print estimator
         pred_y = estimator.predict(x)
 
+        pos = 0
+        neg = 0
+        for i in range(len(real_y)):
+            if pred_y[i] > 0 and real_y.values[i][0] < 0:
+                neg += 1
+            else:
+                print pred_y[i], real_y.values[i][0]
+                pos += 1
+            
+        print "Estimator precision is %s " %(float(pos) / float(pos + neg))
+                
+
+        '''
         plt.figure()
         plt.plot(range(len(real_y)), real_y, 'k-*', label='data')
         plt.plot(range(len(real_y)), pred_y, 'g-o', label='RBF model')
@@ -74,6 +87,7 @@ class MySVM(object):
         plt.title('Support Vector Regression')
         plt.legend()
         plt.show()
+        '''
         
     
     def test(self):
@@ -114,6 +128,6 @@ class MySVM(object):
 if __name__ == "__main__":
     mysvm = MySVM(6, 'small')
     mysvm.setKernel('rbf')
-    #mysvm.fit()
-    #mysvm.predict()
-    mysvm.test()
+    mysvm.fit()
+    mysvm.predict()
+    #mysvm.test()
