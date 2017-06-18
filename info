@@ -23,7 +23,13 @@ KDJ： 连续6天以上的分析预测
 
 
 TODO:
-用连续5天的数据训练，同样用连续5天的数据预测
+用连续6天的数据训练，同样用连续6天的数据预测
+kukd
+bigdealvolpct
+turnoverratio
+RSI6
+
+历史数据获取，并存储在DB 1中。不需要commit到github，云盘存储一份即可
 
 
 

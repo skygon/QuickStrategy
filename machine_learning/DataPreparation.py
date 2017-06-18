@@ -16,6 +16,7 @@ import pandas as pd
 
 # GBDT (Gradient Boost Decision Tree, 梯度提升决策树) 
 # SVM
+STEP = 6 # 6 days
 
 class DataPreparation(object):
     def __init__(self, day_index, vol_type):
@@ -40,6 +41,30 @@ class DataPreparation(object):
 
     def generateTestData(self, change_type='normal'):
         return self.generateData(self.test_summary_table, self.validate_index_table, change_type)
+    
+    # STEP (6) days average data 
+    def generateRawData(self, change_type='normal'):
+        data_source = []
+        (tku, tkd, inc, dec, bigvolpct) = (0,0,0,0,0)
+
+        for k in code_vol_map['sh'][self.vol_type].keys():
+            for day in range(self.day_index+1 - STEP, self.day_index+1):
+                summary_table = "summary_" + str(day) + "_amount_" + str(self.big_deal_type)
+                index_table = "index_" + str(day) + "_dict"
+                s = self.redis.hget(summary_table, k)
+                rs = self.redis.hget(index_table, k)
+                if s is None or rs is None:
+                    continue
+                
+                 # futures from big deal summary
+                data = json.loads(s)
+                e = {}
+                tku += int(data['kuvolume'])
+                tkd += int(data['kdvolume'])
+                bigvolpct += float(data['totalvolpct']) * 100
+
+
+
 
     def generateData(self, summary_table, index_table, change_type):
         data_source = []
