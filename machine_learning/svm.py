@@ -17,27 +17,17 @@ import matplotlib.pyplot as plt
 from sklearn import svm
 
 class MySVM(object):
-    def __init__(self, day_index, vol_type):
-        self.day_index = day_index
+    def __init__(self, vol_type):
         self.vol_type = vol_type
         self.svr_rbf = svm.SVR(kernel='rbf', C=1e3, gamma=0.1)
         self.svr_linear = svm.SVR(kernel='linear')
         self.svr_poly = svm.SVR(kernel='poly', C=1e3, degree=2)
         self.kernel_type = 'rbf'
-        self.dp = DataPreparation(self.day_index, self.vol_type)
     
     
     def setKernel(self, kernel_type):
         self.kernel_type = kernel_type
     
-    def getTrainningData(self, change_type='normal'):
-        x, y = self.dp.generateTrainningData(change_type)
-        print x.shape, y.shape
-        return x, y
-    
-    def getTestData(self, change_type='normal'):
-        x, y = self.dp.generateTestData(change_type)
-        return x, y
     
     def getEstimator(self):
         if self.kernel_type == 'rbf':
@@ -76,11 +66,7 @@ class MySVM(object):
         plt.legend()
         plt.show()
     
-    def fit(self):
-        x, y = self.getTrainningData()
-        #estimator = self.getEstimator()
-        #self.svr_poly.fit(x, y.values.ravel())
-        #estimator.fit(x, y.values.ravel())
+    def fit(self, x, y):
         parameters = {'kernel':('rbf',), 'C':[1e3, 1e2, 1, 10]}
         svr = svm.SVR()
         self.estimator = GridSearchCV(svr, parameters)
@@ -89,51 +75,27 @@ class MySVM(object):
         print self.estimator
 
 
-    def predict(self):
+    def predict(self, x, real_y):
         x, real_y = self.getTestData()
-        #estimator = self.getEstimator()
-        #print estimator
         pred_y = self.estimator.predict(x)
-
-        self.calcAllPrecision(real_y, pred_y)
 
         self.plotData(real_y, pred_y)
         
-    
-    def test(self):
-        x, y = self.getTrainningData()
-
-        parameters = {'kernel':('rbf',), 'C':[1e3, 1e2, 1, 10]}
-        svr = svm.SVR()
-        clf = GridSearchCV(svr, parameters)
-        #clf = svm.SVR()
-        clf.fit(x, y.values.ravel())
-
-        #y_rbf = clf.fit(x, y.values.ravel()).predict(x)
-        test_x, real_y = self.getTestData()
-        pred_y = clf.predict(test_x)
-
-        print "==== best estimator ======"
-        print clf
-        #print "==== checked cv results ===="
-        #print clf.cv_results_
-        self.calcAllPrecision(real_y, pred_y)
-
-        print type(pred_y)
-        print type(real_y.values)
-        #print np.sort(pred_y)
-        print np.sort(real_y.values, axis=None)
-        
-                
-    
-
-        
-
-    
 
 if __name__ == "__main__":
-    mysvm = MySVM(1, 'small')
-    mysvm.setKernel('rbf')
-    mysvm.fit()
-    mysvm.predict()
-    #mysvm.test()
+    mysvm = MySVM('small')
+    # trainning
+    dp = DataPreparation(7)
+    x = dp.generateXData()
+    y = dp.generateYData()
+    print "=====fit===="
+    print x.shape, y.shape
+    mysvm.fit(x, y)
+
+    # predict
+    dp = DataPreparation(8)
+    x = dp.generateXData()
+    y = dp.generateYData()
+    print "=====predict===="
+    print x.shape, y.shape
+    mysvm.predict(x, y)
