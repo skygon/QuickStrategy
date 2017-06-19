@@ -32,6 +32,7 @@ class DataPreparation(object):
         self.y_keys = ['score']
         self.data_source = [] 
         self.valid_code = []
+        self.y_code = []
 
         self.redis = RedisOperator('localhost', 6379, 0)
 
@@ -124,6 +125,7 @@ class DataPreparation(object):
             elif change_type == 'class':
                 score = self.transChange2Catalog(cp)
             
+            self.y_code.append(k)
             e['code'] = k
             e['changepercent'] = cp
             e['score'] = score
@@ -171,4 +173,6 @@ if __name__ == "__main__":
     dp = DataPreparation(7, 'small')
     df_x = dp.generateXData()
     df_y = dp.generateYData()
-    print df_x.filter(df_x.code == 'sh603223')
+    print df_y.shape
+    print df_x[df_x.code.isin(dp.y_code)]
+    
