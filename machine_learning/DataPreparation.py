@@ -28,15 +28,24 @@ class DataPreparation(object):
         self.summary_table = "summary_" + str(self.day_index) + "_amount_" + str(self.big_deal_type)
         self.index_table = "index_" + str(self.day_index+1) + "_dict"
 
-        self.x_keys = ['kukd', 'totalvolpct', 'rsi'] # TODO add more futures, like RSI, MACD, KDJ ...
+        #self.x_keys = ['kukd', 'totalvolpct', 'rsi'] # TODO add more futures, like RSI, MACD, KDJ ...
+        self.x_keys =['rsi', 'kukd', 'totalvolpct']
         self.y_keys = ['score']
         self.data_source = [] 
         self.valid_code = []
         self.y_code = []
 
         self.redis = RedisOperator('localhost', 6379, 0)
+        self.df_x = self.generateXData()
+        self.df_y = self.generateYData()
 
         
+    def generateData(self):
+        df_x_s = self.df_x[self.df_x.code.isin(self.y_code)]
+        x = df_x_s[self.x_keys]
+        y = self.df_y[self.y_keys]
+
+        return x, y
 
     # STEP (6) days average data 
     def generateXData(self, change_type='normal'):
@@ -91,7 +100,7 @@ class DataPreparation(object):
                 if (tku + tkd) == 0:
                     e['kukd'] = 0
                 else:
-                    e['kukd'] = float(tku - tkd) / (tku + tkd) * 100
+                    e['kukd'] = float(tku) / (tku + tkd) * 100
                 
                 e['count'] = count
                 if count == 0:
@@ -102,7 +111,7 @@ class DataPreparation(object):
         
         df = pd.DataFrame.from_records(data_source)
         #print df.head(50)
-        x = df[self.x_keys]
+        #x = df[self.x_keys]
         return df
 
     def generateYData(self, change_type='normal'):
@@ -125,13 +134,14 @@ class DataPreparation(object):
             elif change_type == 'class':
                 score = self.transChange2Catalog(cp)
             
+            # y_code is used to select corresponding data from x
             self.y_code.append(k)
             e['code'] = k
             e['changepercent'] = cp
             e['score'] = score
             data_source.append(e)
         df = pd.DataFrame.from_records(data_source)
-        y = df[self.y_keys]
+        #y = df[self.y_keys]
         #print df.head(50)
         return df
 
@@ -171,8 +181,6 @@ class DataPreparation(object):
 
 if __name__ == "__main__":
     dp = DataPreparation(7, 'small')
-    df_x = dp.generateXData()
-    df_y = dp.generateYData()
-    print df_y.shape
-    print df_x[df_x.code.isin(dp.y_code)]
+    x, y = dp.generateData()
+    print x.shape, y.shape
     

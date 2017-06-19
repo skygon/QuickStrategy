@@ -17,8 +17,7 @@ import matplotlib.pyplot as plt
 from sklearn import svm
 
 class MySVM(object):
-    def __init__(self, vol_type):
-        self.vol_type = vol_type
+    def __init__(self):
         self.svr_rbf = svm.SVR(kernel='rbf', C=1e3, gamma=0.1)
         self.svr_linear = svm.SVR(kernel='linear')
         self.svr_poly = svm.SVR(kernel='poly', C=1e3, degree=2)
@@ -76,26 +75,20 @@ class MySVM(object):
 
 
     def predict(self, x, real_y):
-        x, real_y = self.getTestData()
         pred_y = self.estimator.predict(x)
-
         self.plotData(real_y, pred_y)
         
 
 if __name__ == "__main__":
-    mysvm = MySVM('small')
+    mysvm = MySVM()
     # trainning
-    dp = DataPreparation(7)
-    x = dp.generateXData()
-    y = dp.generateYData()
+    dp = DataPreparation(7, 'mid')
+    x, y = dp.generateData()
     print "=====fit===="
-    print x.shape, y.shape
     mysvm.fit(x, y)
 
     # predict
-    dp = DataPreparation(8)
-    x = dp.generateXData()
-    y = dp.generateYData()
+    dp = DataPreparation(8, 'mid')
+    x, y = dp.generateData()
     print "=====predict===="
-    print x.shape, y.shape
     mysvm.predict(x, y)
