@@ -30,7 +30,7 @@ class DataPreparation(object):
         self.test_summary_table = "summary_" + str(self.day_index+1) + "_amount_" + str(self.big_deal_type)
         self.validate_index_table = "index_" + str(self.day_index+2) + "_dict"
 
-        self.x_keys = ['kukd', 'bigdealvolpct', 'turnoverratio'] # TODO add more futures, like RSI, MACD, KDJ ...
+        self.x_keys = ['kukd', 'totalvolpct', 'rsi'] # TODO add more futures, like RSI, MACD, KDJ ...
         self.y_keys = ['score']
         self.data_source = [] 
 
@@ -43,25 +43,66 @@ class DataPreparation(object):
         return self.generateData(self.test_summary_table, self.validate_index_table, change_type)
     
     # STEP (6) days average data 
-    def generateRawData(self, change_type='normal'):
+    def generateXData(self, change_type='normal'):
         data_source = []
-        (tku, tkd, inc, dec, bigvolpct) = (0,0,0,0,0)
 
         for k in code_vol_map['sh'][self.vol_type].keys():
+        #for k in ['sh603033']:
+            # Does turnoverratio necessary ???
+            (tku, tkd, inc, dec, bigvolpct, count) = (0,0,0,0,0,0)
+            e = {}
             for day in range(self.day_index+1 - STEP, self.day_index+1):
                 summary_table = "summary_" + str(day) + "_amount_" + str(self.big_deal_type)
                 index_table = "index_" + str(day) + "_dict"
                 s = self.redis.hget(summary_table, k)
                 rs = self.redis.hget(index_table, k)
-                if s is None or rs is None:
-                    continue
+
+                if s is not None:
+                    # futures from big deal summary
+                    data = json.loads(s)
+                    tku += int(data['kuvolume'])
+                    tkd += int(data['kdvolume'])
+                    bigvolpct += float(data['totalvolpct']) * 100
+                    count += 1
                 
-                 # futures from big deal summary
-                data = json.loads(s)
-                e = {}
-                tku += int(data['kuvolume'])
-                tkd += int(data['kdvolume'])
-                bigvolpct += float(data['totalvolpct']) * 100
+                if rs is not None:
+                    index_data = json.loads(rs)
+                    changepercent = float(index_data['changepercent'])
+                    #print "day %s change: %s" %(str(day), str(changepercent))
+                    if changepercent >= 0:
+                        inc += changepercent
+                    else:
+                        dec += abs(changepercent)
+
+            
+            # Calc STEP days RSI
+            if dec == 0:
+                RSI = 100
+            else:
+                RS = inc / dec
+                RSI = RS / (1 + RS) * 100
+            e['code'] = k
+            e['rsi'] = RSI
+
+            # kukd
+            if (tku + tkd) == 0:
+                e['kukd'] = 0
+            else:
+                e['kukd'] = float(tku - tkd) / (tku + tkd) * 100
+            
+            e['count'] = count
+            if count == 0:
+                e['totalvolpct'] = 0
+            else:    
+                e['totalvolpct'] = bigvolpct / count
+            data_source.append(e)
+        
+        df = pd.DataFrame.from_records(data_source)
+        print df.head(200)
+        x = df[self.x_keys]
+        return x
+
+
 
 
 
@@ -150,5 +191,6 @@ class DataPreparation(object):
 
 if __name__ == "__main__":
     dp = DataPreparation(7, 'small')
-    x, y = dp.generateTrainningData()
-    print x.head(20)
+    x = dp.generateXData()
+    #print x.shape
+    #print x.head(20)
