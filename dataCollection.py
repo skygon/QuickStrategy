@@ -130,7 +130,7 @@ class DataCollection(threading.Thread):
 def getBillDetail(day_index, date_string):
     # 5 levels
     tdc = []
-    level = 0
+    level = 4
     print "================================================== \n"
     print "Start Level %s\n" %(level)
     for i in range(dc_thread_poll):
@@ -147,5 +147,5 @@ def getIndex(day_index):
 
 
 if __name__ == "__main__":
-    getBillDetail(10, "2017-06-19")
-    #getIndex(10)
+    getBillDetail(11, "2017-06-20")
+    #getIndex(11)
