@@ -49,5 +49,8 @@ def getTotalVolume():
 
 
 if __name__ == '__main__':
-    changeIndexToDict(12)
+    changeIndexToDict(13)
+    changeIndexToDict(14)
+    changeIndexToDict(15)
+    changeIndexToDict(16)
     #getTotalVolume()
